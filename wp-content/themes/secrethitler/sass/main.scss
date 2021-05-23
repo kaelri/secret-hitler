@@ -1,0 +1,52 @@
+// LIBRARIES
+// ---------
+
+@import 'lib/helpers';
+@import 'lib/normalize';
+@import 'lib/range';
+
+// RANGES
+// ------
+
+$theme-ranges: (
+	mb:  (max:  767),
+	sm:  (min:  768),
+	md:  (min:  992),
+	lg:  (min: 1200),
+);
+
+$ranges: map-merge($ranges, $theme-ranges);
+
+// COLORS
+// ------
+
+$black:  #333;
+$white:  #eee;
+$blue:   #0275D8;
+$green:  #5CB85C;
+$teal:   #5BC0DE;
+$orange: #F0AD4E;
+$red:    #D9534F;
+
+$link-color: $blue;
+$link-color-hover: lighten($blue, 10%);
+
+// FONTS
+// -----
+
+$primary-font: sans-serif;
+
+// LAYERS
+// ------
+
+// CONTAINERS
+// ----------
+
+html,
+body {
+	font: 16px/1.5 $primary-font;
+}
+
+body {
+	color: $black;
+}

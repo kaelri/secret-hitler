@@ -1,0 +1,12 @@
+{
+	"name": "secret-hitler",
+	"version": "1.0.0",
+	"author": "kaelri",
+	"description": "",
+	"license": "",
+	"private": true,
+	"scripts": {
+		"build": "npx mix",
+		"watch": "npx mix watch"
+	}
+}

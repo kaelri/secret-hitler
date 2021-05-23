@@ -1,0 +1,93 @@
+// COMPATIBILITY
+// Mixins and functions related to browser compatibility.
+
+	// Clip Path
+	@mixin clip-path ( $value ) {
+		-webkit-clip-path: $value;
+		clip-path: $value;
+	}
+
+// CLEAR
+
+	@mixin clear-after {
+		&::after {
+			clear: both;
+			display: block;
+			content: '';
+		}
+	}
+
+// FIRST & LAST MARGINS
+// Specify that the first and last children of a containing element have no top or bottom margin, respectively. This is useful when the container already provides appropriate padding or margin around its contents.
+
+	@mixin no-first-last-margins ( $first: 0, $last: 0 ) {
+		& > *:first-child { margin-top:    $first; }
+		& > *:last-child  { margin-bottom: $last;  }
+	}
+
+// LINK COLOR
+
+	@mixin link-color($color, $hover: $color) {
+		color: $color;
+		&:active { color: $color; }
+		&:visited { color: $color; }
+		@if ( $hover != null ) {
+			&:hover { color: $hover; }
+		}
+	}
+
+	@mixin invisible-link() {
+		@include link-color(inherit);
+		text-decoration: inherit;
+	}
+
+// FLEXBOX SHORTCODES
+
+	@mixin flex-layout ( $flex-direction: row, $flex-wrap: nowrap, $justify-content: flex-start, $align-items: stretch ) {
+		display: flex;
+		flex-direction:  $flex-direction ;
+		flex-wrap:  $flex-wrap ;
+		justify-content:  $justify-content ;
+		align-items:  $align-items ;
+	}
+
+	@mixin flex-children ( $flex: 0 1 auto ) {
+		& > * {
+			flex:  $flex ;
+		}
+	}
+
+// UNSTYLED LIST
+
+	@mixin no-list-style {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+// ABSOLUTE CENTER
+
+@mixin absolute-center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+// ABSOLUTE OVERLAY
+
+	@mixin absolute-cover {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
+
+// ZOOM ON HOVER
+
+	@mixin hover-zoom( $scale: 1.2 ) {
+		transform: scale(1);
+		&:hover { transform: scale($scale); }
+		transition:  transform .2s ;
+	}
