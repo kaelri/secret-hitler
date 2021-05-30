@@ -1,0 +1,28 @@
+#portal-spinner {
+	position: fixed;
+	opacity: 0;
+	z-index: 200;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.6);
+	color: white;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-align-items: center;
+	align-items: center;
+	pointer-events: none;
+	font-size: 6rem;
+	-moz-transition: opacity .2s;
+	-o-transition: opacity .2s;
+	-webkit-transition: opacity .2s;
+	transition: opacity .2s;
+}
+
+body.portal-is-loading #portal-spinner {
+	opacity: 1;
+	pointer-events: auto;
+}

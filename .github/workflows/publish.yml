@@ -1,0 +1,20 @@
+name: Publish to Production
+on:
+  push:
+    branches: [ master ]
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Code
+      uses: actions/checkout@v2.1.0
+      with:
+        fetch-depth: 2
+    - name: Sync Files
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      with:
+        ftp-server:   sftp://ps561277.dreamhostps.com:22/home/kaelri/secrethitler.kaelri.com/
+        ftp-username: kaelri
+        ftp-password: ${{ secrets.PROD_SFTP_PASSWORD }}
+        git-ftp-args: --insecure

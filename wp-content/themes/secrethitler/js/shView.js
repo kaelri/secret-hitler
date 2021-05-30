@@ -1,2 +1,0 @@
-Vue.component('shView', {
-});
