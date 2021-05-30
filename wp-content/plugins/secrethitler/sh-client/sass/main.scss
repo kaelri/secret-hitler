@@ -39,9 +39,9 @@ $ranges: map-merge($ranges, $theme-ranges);
 	--highlight-dark-blue:   #{desaturate( darken( #80C0FF, 18% ), 66% )};
 
 	// STYLES
-	--link-color:           var(--highlight-dark-blue);
-	--link-color-hover:     var(--highlight-light-blue);
-	--link-text-decoration: none;
+	--link-color:            var(--highlight-dark-blue);
+	--link-color-hover:      var(--highlight-light-blue);
+	--link-text-decoration:  none;
 
 }
 

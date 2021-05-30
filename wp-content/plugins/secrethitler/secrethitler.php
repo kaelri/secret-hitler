@@ -22,3 +22,4 @@ spl_autoload_register(function ($class_name) {
 
 shServer::setup();
 shClient::setup();
+shGame::setup();

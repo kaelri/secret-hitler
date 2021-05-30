@@ -18,7 +18,7 @@
 
 	<?php wp_body_open(); ?>
 
-	<main class="main" id="secret-hitler"></main>
+	<article id="secret-hitler"></article>
 	
 	<?php wp_footer(); ?>
 
