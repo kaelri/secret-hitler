@@ -1,6 +1,6 @@
 let mix = require('laravel-mix');
 
-let themePath = 'wp-content/themes/secrethitler/';
+let themePath = 'wp-content/plugins/secrethitler/sh-client/';
 
 mix
 .options({

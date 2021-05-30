@@ -3,17 +3,16 @@
 @import 'lib/helpers';
 @import 'lib/normalize';
 @import 'lib/range';
-@import 'lib/wp';
 
 // RANGES
 
 $theme-ranges: (
 	
-	xs: ( min:  575 ),
-	sm: ( min:  576 ),
-	md: ( min:  768 ),
-	lg: ( min:  992 ),
-	xl: ( min: 1200 ),
+	xs:      ( min:  575 ),
+	sm:      ( min:  576 ),
+	md:      ( min:  768 ),
+	lg:      ( min:  992 ),
+	xl:      ( min: 1200 ),
 
 	tiny:    ( max:  400 ),
 	mobile:  ( max:  879 ),

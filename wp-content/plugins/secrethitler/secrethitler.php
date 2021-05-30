@@ -20,4 +20,5 @@ spl_autoload_register(function ($class_name) {
 	if ( file_exists($path) ) require_once $path;
 });
 
-Portal::setup();
+shServer::setup();
+shClient::setup();
