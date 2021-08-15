@@ -23,6 +23,6 @@ class shGame {
 
 	// INSTANCE
 
-	
+
 
 }

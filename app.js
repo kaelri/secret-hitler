@@ -1,6 +1,5 @@
 const fs    = require('fs');
 const https = require('https');
-const url   = require('url'); 
 
 const express = require('express')
 const app     = express()
@@ -18,10 +17,8 @@ app.get('/', (req, res) => {
 })
 
 // HTTP
-var http = express();
-
-http.get('*', function(req, res) {  
+var http = express()
+.get('*', function(req, res) {
     res.redirect('https://' + req.headers.host + req.url);
-});
-
-http.listen(80);
+})
+.listen(80);

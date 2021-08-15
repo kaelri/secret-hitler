@@ -24,7 +24,7 @@ new Vue({
 	template: `<article id="secret-hitler">
 
 		<header>
-		
+
 			<h2>User</h2>
 
 			<p v-if="!loggedIn"><a :href="loginUrl">Log in</a></p>
@@ -33,17 +33,17 @@ new Vue({
 		</header>
 
 		<section id="home" v-show="isView('home')">
-					
+
 			<h2>Games</h2>
-			
+
 			<a href @click.prevent="setView('create')">New Game</a>
 
 		</section>
 
 		<section id="create" v-show="isView('create')">
-					
+
 			<h2>New Game</h2>
-			
+
 			<input type="text" v-model="newGameName">
 
 			<button type="button" @click.prevent="createGame">Create Game</button>
@@ -63,7 +63,7 @@ new Vue({
 		},
 
 		createGame() {
-			
+
 		},
 
 	},
