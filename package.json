@@ -8,5 +8,8 @@
 	"scripts": {
 		"build": "npx mix",
 		"watch": "npx mix watch"
+	},
+	"dependencies": {
+		"express": "^4.17.1"
 	}
 }
