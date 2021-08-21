@@ -3,87 +3,230 @@ const session = require('express-session');
 const mysql   = require('mysql');
 const crypto  = require('crypto');
 
-exports.register = function(req, res, next) {
+exports.session = async function (req, res, next) {
 
-	let username = req.body.username,
-	    password = req.body.password,
-	    email    = req.body.email;
+	res.status(200).send({
+		loggedIn: req.session.loggedIn ?? false,
+		user:     req.session.user     ?? null
+	});
 
-	var connection = mysql.createConnection({
+}
+
+exports.register = async function(req, res, next) {
+
+	const userName    = String( req.body.name     ).trim(),
+	      userEmail   = String( req.body.email    ).trim(),
+	      userDisplay = String( req.body.display  ).trim(),
+	      password    = String( req.body.password ).trim(),
+	      userRoles   = [ 'player' ],
+		  connection  = dbConnection();
+
+	let userId    = null,
+	    userHash  = null,
+	    userSalt  = null;
+	    
+	// Check if user exists.
+	let userExists;
+
+	try {
+
+		userExists = await dbGetUserExists( connection, userName );
+
+	} catch (error) {
+
+		return res.status(500).send({
+			error: error
+		});
+
+	}
+
+	if ( userExists ) {
+
+		return res.status(400).send({
+			code: 'user-exists',
+			message: `A user is already registered with the name “${userName}”.`
+		});
+
+	}
+
+	// Create user.
+	userSalt = crypto.randomBytes(16).toString('hex');
+	userHash = crypto.pbkdf2Sync( password, userSalt, 1000, 64, `sha512`).toString(`hex`);
+
+	try {
+
+		userId = await dbCreateUser( connection, {
+			name:    userName,
+			hash:    userHash,
+			salt:    userSalt,
+			email:   userEmail,
+			display: userDisplay,
+			roles:   userRoles.join(','),
+		});
+
+	} catch (error) {
+
+		return res.status(500).send({
+			error: error
+		});
+
+	}
+
+	// Finish.
+	connection.end();
+
+	const user = {
+		id:      userId,
+		name:    userName,
+		email:   userEmail,
+		display: userDisplay,
+		roles:   userRoles
+	}
+
+	req.session.loggedIn = true;
+	req.session.user     = user;
+
+	return res.status(200).send({
+		loggedIn: true,
+		user:     user
+	});
+
+};
+
+exports.login = async function(req, res, next) {
+
+	const userName   = req.body.name,
+	      password   = req.body.password,
+		  connection = dbConnection();
+
+	// Check if user exists.
+	let userRows;
+
+	try {
+
+		userRows = await dbGetUser( connection, userName );
+
+	} catch (error) {
+
+		return res.status(500).send({
+			error: error
+		});
+
+	}
+
+	if ( !userRows.length ) {
+
+		return res.status(400).send({
+			code: 'bad-credentials',
+			message: `The username or password is incorrect.`
+		});
+
+	}
+
+	let userRow = userRows[0];
+
+	// Validate password.
+	let loginHash = crypto.pbkdf2Sync(password, userRow.salt, 1000, 64, `sha512`).toString(`hex`);
+	
+	if ( loginHash != userRow.hash ) {
+
+		return res.status(400).send({
+			code: 'bad-credentials',
+			message: `The username or password is incorrect.`
+		});
+
+	}
+
+	let user = {
+		id:      userRow.id,
+		name:    userRow.name,
+		email:   userRow.email,
+		display: userRow.display,
+		roles:   userRow.roles.split(',')
+	}
+
+	req.session.loggedIn = true;
+	req.session.user     = user;
+
+	return res.status(200).send({
+		loggedIn: true,
+		user:     user
+	});
+
+};
+
+exports.logout = async function (req, res, next) {
+
+	req.session.destroy(function(){
+		res.status(200).send({
+			loggedIn: false,
+			user:     null
+		});
+	});
+
+}
+
+const dbConnection = function() {
+
+	return mysql.createConnection({
 		host     : process.env.DB_HOST,
 		user     : process.env.DB_USER,
 		password : process.env.DB_PASS,
 		database : process.env.DB_NAME
 	});
 
-	// Check if user exists.
-	let numExistingAccounts;
+}
 
-	try {
+const dbCreateUser = function( connection, userData ) {
 
-		connection.query(`SELECT COUNT(id) AS numExistingAccounts FROM users WHERE username = ?`, email, function (error, results, fields) {
+	return new Promise((resolve, reject) => {
 
-			if (error) throw error;
+		connection.query(`INSERT INTO users SET ?`, userData, function (error, results, fields) {
 
-			numExistingAccounts = results[0].numExistingAccounts;
+			if (error) return reject(error);
 
-		});
+			userId = results.insertId;
 
-	} catch (error) {
-
-		res.status(500).send(error);
-		return;
-
-	}
-
-	if ( numExistingAccounts > 0 ) {
-		res.status(400).send({
-			code: 'user-exists',
-			message: 'A user is already registered with this name.'
-		});
-		return;
-	}
-
-	// Create user.
-	let salt = crypto.randomBytes(16).toString('hex'),
-	    hash;
-
-	try {
-
-		connection.query(`INSERT INTO users SET ?`, {
-			username: username,
-			hash:     hash,
-			salt:     salt,
-			email:    email,
-			roles:    'player',
-		}, function (error, results, fields) {
-
-			if (error) throw error;
-
-			numExistingAccounts = results[0].numExistingAccounts;
+			return resolve( userId );
 
 		});
 
-	} catch (error) {
+	});
 
-		res.status(500).send(error);
-		return;
+}
 
-	}
+const dbGetUser = function( connection, userName ) {
 
+	return new Promise((resolve, reject) => {
 
-	// Finish.
-	connection.end();
+		console.log(userName);
 
-	res.status(200).send({ user: 'So far, so good.' });
+		connection.query(`SELECT * FROM users WHERE name = ?`, userName, function (error, results, fields) {
 
-};
+			if (error) return reject(error);
 
-exports.login = function(req, res, next) {
+			return resolve( results );
 
-	res.status(200).send({
-		gotUsername: req.body.username,
-		gotPassword: req.body.password
-	})
+		});
 
-};
+	});
+
+}
+
+const dbGetUserExists = function( connection, userName ) {
+
+	return new Promise((resolve, reject) => {
+
+		connection.query(`SELECT COUNT(id) AS numExistingAccounts FROM users WHERE name = ?`, userName, function (error, results, fields) {
+
+			if (error) return reject(error);
+
+			userExists = ( results[0].numExistingAccounts > 0 );
+
+			return resolve( userExists );
+
+		});
+
+	});
+
+}

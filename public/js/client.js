@@ -7,23 +7,24 @@ new Vue({
 	data: {
 
 		// AUTHENTICATION
-		loggedIn:      false,
-		user:          null,
+		loggedIn: secretHitlerData.loggedIn ?? false,
+		user:     secretHitlerData.user     ?? null,
 
 		// UI
 		view: 'home',
 
 		// REGISTER
-		registerUsername: '',
+		registerName:     '',
 		registerPassword: '',
 		registerEmail:    '',
+		registerDisplay:  '',
 
 		// LOGIN
-		loginUsername: '',
+		loginName:     '',
 		loginPassword: '',
 
 		// NEW GAME
-		newGameName: '',
+		newName: '',
 
 	},
 
@@ -35,7 +36,7 @@ new Vue({
 			<h2>User</h2>
 
 			<p v-if="!loggedIn"><a href @click.prevent="setView('login')">Log in</a> • <a href @click.prevent="setView('register')">Register</a></p>
-			<p v-if="loggedIn">{{ username }} • <a :href="logoutUrl">Log out</a></p>
+			<p v-if="loggedIn"><span :title="user.name">{{ user.display }}</span> • <a href @click.prevent="logout">Log out</a></p>
 
 		</header>
 
@@ -51,7 +52,7 @@ new Vue({
 
 			<h2>New Game</h2>
 
-			<input type="text" v-model="newGameName">
+			<input type="text" v-model="newName">
 
 			<button type="button" @click.prevent="createGame">Create Game</button>
 
@@ -62,18 +63,23 @@ new Vue({
 			<h2>Register</h2>
 
 			<div>
-				<label for="register-username">Username</label>
-				<input type="text" name="username" v-model="registerUsername">
+				<label for="register-name">Username</label>
+				<input type="text" name="register-name" v-model="registerName">
 			</div>
 
 			<div>
 				<label for="register-password">Password</label>
-				<input type="password" name="password" v-model="registerPassword">
+				<input type="password" name="register-password" v-model="registerPassword">
 			</div>
 
 			<div>
 				<label for="register-email">Email</label>
 				<input type="email" name="email" v-model="registerEmail">
+			</div>
+
+			<div>
+				<label for="register-display">Display Name</label>
+				<input type="text" name="display" v-model="registerDisplay">
 			</div>
 
 			<button type="button" @click.prevent="register">Log in</button>
@@ -85,8 +91,8 @@ new Vue({
 			<h2>Login</h2>
 
 			<div>
-				<label for="login-username">Username</label>
-				<input type="text" name="username" v-model="loginUsername">
+				<label for="login-name">Username</label>
+				<input type="text" name="login-name" v-model="loginName">
 			</div>
 
 			<div>
@@ -114,18 +120,21 @@ new Vue({
 
 			let self = this;
 
-			let call = new Portal({
+			new Portal({
 				endpoint: '/auth/register',
 				body: {
-					username: this.registerUsername,
+					name:     this.registerName,
 					password: this.registerPassword,
 					email:    this.registerEmail,
+					display:  this.registerDisplay,
 				},
 				callback( call ) {
-					
+
 					switch ( call.status ) {
 						case 200:
-							self.user = call.response.user
+							self.loggedIn = call.response.loggedIn
+							self.user     = call.response.user
+							self.setView('home');
 							break;
 						case 400:
 							console.info(call.response.code);
@@ -143,14 +152,54 @@ new Vue({
 
 			let self = this;
 
-			let call = new Portal({
+			new Portal({
 				endpoint: '/auth/login',
 				body: {
-					username: this.loginUsername,
+					name:     this.loginName,
 					password: this.loginPassword,
 				},
 				callback( call ) {
-					console.log(call);
+					
+					switch ( call.status ) {
+						case 200:
+							self.loggedIn = call.response.loggedIn
+							self.user     = call.response.user
+							self.setView('home');
+							break;
+						case 400:
+							console.info(call.response.code);
+							break;
+						default:
+							console.error( 'Something went wrong.', call );
+					}
+
+				},
+			});
+
+		},
+
+		logout() {
+
+			let self = this;
+
+			new Portal({
+				endpoint: '/auth/logout',
+				body: {},
+				callback( call ) {
+					
+					switch ( call.status ) {
+						case 200:
+							self.loggedIn = call.response.loggedIn
+							self.user     = call.response.user
+							self.setView('home');
+							break;
+						case 400:
+							console.info(call.response.code);
+							break;
+						default:
+							console.error( 'Something went wrong.', call );
+					}
+
 				},
 			});
 

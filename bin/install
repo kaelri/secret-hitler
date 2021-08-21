@@ -13,11 +13,14 @@ var connection = mysql.createConnection({
 connection.connect();
 
 let sqlCreateUsers = `CREATE TABLE \`users\` (
-	\`ID\` bigint(20) UNSIGNED NOT NULL,
-	\`username\` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-	\`password\` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`id\` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	\`name\` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`hash\` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`salt\` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`display\` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
 	\`email\` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-	\`roles\` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ''
+	\`roles\` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`
  
 connection.query(sqlCreateUsers, function (error, results, fields) {
