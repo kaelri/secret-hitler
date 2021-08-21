@@ -1,15 +1,21 @@
 {
-	"name": "secret-hitler",
-	"version": "1.0.0",
-	"author": "kaelri",
-	"description": "",
-	"license": "",
-	"private": true,
-	"scripts": {
-		"build": "npx mix",
-		"watch": "npx mix watch"
-	},
-	"dependencies": {
-		"express": "^4.17.1"
-	}
+  "name": "secret-hitler",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "install": "node ./bin/install",
+    "uninstall": "node ./bin/uninstall"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
+    "express": "~4.16.1",
+    "express-session": "^1.17.2",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "mysql": "^2.18.1"
+  }
 }

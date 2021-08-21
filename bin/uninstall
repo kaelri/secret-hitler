@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+var dotenv = require('dotenv').config();
+var mysql  = require('mysql');
+
+var connection = mysql.createConnection({
+  host     : process.env.DB_HOST,
+  user     : process.env.DB_USER,
+  password : process.env.DB_PASS,
+  database : process.env.DB_NAME
+});
+ 
+connection.connect();
+
+connection.query(`DROP TABLE IF EXISTS \`users\``, function (error, results, fields) {
+  if (error) throw error;
+  
+});
+
+console.log(`“${process.env.DB_NAME}” database uninstalled.`);
+ 
+connection.end();

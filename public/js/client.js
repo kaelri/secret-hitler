@@ -7,10 +7,10 @@ new Vue({
 	data: {
 
 		// AUTHENTICATION
-		loggedIn:  Portal.getData('loggedIn'),
-		loginUrl:  Portal.getData('loginUrl'),
-		logoutUrl: Portal.getData('logoutUrl'),
-		username:  Portal.getData('user'),
+		loggedIn:  false,
+		loginUrl:  '/login/',
+		logoutUrl: '/logout',
+		username:  null,
 
 		// UI
 		view: 'home',

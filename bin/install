@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var dotenv = require('dotenv').config();
+var mysql  = require('mysql');
+
+var connection = mysql.createConnection({
+  host     : process.env.DB_HOST,
+  user     : process.env.DB_USER,
+  password : process.env.DB_PASS,
+  database : process.env.DB_NAME
+});
+ 
+connection.connect();
+
+let sqlCreateUsers = `CREATE TABLE \`users\` (
+	\`ID\` bigint(20) UNSIGNED NOT NULL,
+	\`username\` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`password\` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`email\` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+	\`roles\` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`
+ 
+connection.query(sqlCreateUsers, function (error, results, fields) {
+  if (error) throw error;
+});
+
+console.log(`“${process.env.DB_NAME}” database installed!`);
+ 
+connection.end();
