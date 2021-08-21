@@ -139,6 +139,8 @@ Portal = function( config ) {
 		document.body.classList.remove('portal-is-loading');
 	}
 
+	this.send();
+
 	return this;
 
 }
