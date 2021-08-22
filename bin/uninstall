@@ -12,9 +12,10 @@ var connection = mysql.createConnection({
  
 connection.connect();
 
-connection.query(`DROP TABLE IF EXISTS \`users\``, function (error, results, fields) {
+let sql = 'DROP TABLE IF EXISTS `users`,`games`,`players`,`sessions`;';
+
+connection.query(sql, function (error, results, fields) {
   if (error) throw error;
-  
 });
 
 console.log(`“${process.env.DB_NAME}” database uninstalled.`);

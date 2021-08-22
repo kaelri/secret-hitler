@@ -79,7 +79,7 @@ exports.register = async function(req, res, next) {
 	}
 
 	req.session.loggedIn = true;
-	req.session.user     = user;
+	req.session.userID   = user.id;
 
 	return res.status(200).send({
 		loggedIn: true,
@@ -143,7 +143,7 @@ exports.login = async function(req, res, next) {
 	}
 
 	req.session.loggedIn = true;
-	req.session.user     = user;
+	req.session.userID   = user.id;
 
 	return res.status(200).send({
 		loggedIn: true,

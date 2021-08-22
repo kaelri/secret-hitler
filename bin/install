@@ -26,7 +26,7 @@ sql = `CREATE TABLE \`users\` (
 	\`created\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (id)
 );`
- 
+
 connection.query(sql, function (error, results, fields) {
   if (error) throw error;
 });
@@ -36,7 +36,8 @@ sql = `CREATE TABLE \`games\` (
 	\`id\` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 	\`name\` varchar(60) NOT NULL DEFAULT '',
 	\`code\` varchar(60) NOT NULL DEFAULT '',
-	\`state\` longtext NOT NULL DEFAULT '',
+	\`status\` varchar(60) NOT NULL DEFAULT '',
+	\`content\` longtext NOT NULL DEFAULT '',
 	\`owner\` bigint(20) UNSIGNED NOT NULL,
 	\`created\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	\`modified\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

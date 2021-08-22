@@ -4,14 +4,15 @@ const mysql   = require('mysql');
 const dayjs   = require('dayjs');
 
 class shGame {
-	
+
 }
 
 exports.create = async function(req, res, next) {
 
-	const gameName   = String( req.body.name ?? '' ).trim(),
-	      gameState  = {},
-		  connection = dbConnection();
+	const gameName    = String( req.body.name ?? '' ).trim(),
+	      gameStatus  = 'new',
+	      gameContent = {},
+		  connection  = dbConnection();
 
 	// Check auth.
 	if ( !req.session.loggedIn ) {
@@ -59,7 +60,8 @@ exports.create = async function(req, res, next) {
 		gameID = await dbCreateGame( connection, {
 			name:    gameName,
 			code:    gameCode,
-			state:   JSON.stringify( gameState ),
+			status:  gameStatus,
+			content: JSON.stringify( gameData ),
 			owner:   gameOwnerID,
 		});
 
@@ -98,6 +100,8 @@ exports.create = async function(req, res, next) {
 		id:      gameID,
 		code:    gameCode,
 		name:    gameName,
+		status:  gameStatus,
+		content: gameContent,
 		owner:   gameOwnerID
 	}
 
