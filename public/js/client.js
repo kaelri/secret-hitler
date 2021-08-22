@@ -26,6 +26,9 @@ new Vue({
 		// NEW GAME
 		newName: '',
 
+		// GAME
+		game: null,
+
 	},
 
 	/*html*/
@@ -52,9 +55,12 @@ new Vue({
 
 			<h2>New Game</h2>
 
-			<input type="text" v-model="newName">
+			<div>
+				<label for="new-name">Game Name (optional)</label>
+				<input type="text" name="new-name" v-model="newName">
+			</div>
 
-			<button type="button" @click.prevent="createGame">Create Game</button>
+			<button type="button" @click.prevent="createGame">Create game</button>
 
 		</section>
 
@@ -82,7 +88,7 @@ new Vue({
 				<input type="text" name="display" v-model="registerDisplay">
 			</div>
 
-			<button type="button" @click.prevent="register">Log in</button>
+			<button type="button" @click.prevent="register">Register</button>
 
 		</section>
 
@@ -206,6 +212,30 @@ new Vue({
 		},
 
 		createGame() {
+
+			let self = this;
+
+			new Portal({
+				endpoint: '/game/create',
+				body: {
+					name: this.newName
+				},
+				callback( call ) {
+
+					switch ( call.status ) {
+						case 200:
+							self.game = call.response.game
+							self.setView('game');
+							break;
+						case 400:
+							console.info(call.response.code);
+							break;
+						default:
+							console.error( 'Something went wrong.', call );
+					}
+
+				},
+			});
 
 		},
 

@@ -3,15 +3,6 @@ const session = require('express-session');
 const mysql   = require('mysql');
 const crypto  = require('crypto');
 
-exports.session = async function (req, res, next) {
-
-	res.status(200).send({
-		loggedIn: req.session.loggedIn ?? false,
-		user:     req.session.user     ?? null
-	});
-
-}
-
 exports.register = async function(req, res, next) {
 
 	const userName    = String( req.body.name     ).trim(),
@@ -21,9 +12,9 @@ exports.register = async function(req, res, next) {
 	      userRoles   = [ 'player' ],
 		  connection  = dbConnection();
 
-	let userId    = null,
-	    userHash  = null,
-	    userSalt  = null;
+	let userId,
+	    userHash,
+	    userSalt;
 	    
 	// Check if user exists.
 	let userExists;
@@ -35,7 +26,9 @@ exports.register = async function(req, res, next) {
 	} catch (error) {
 
 		return res.status(500).send({
-			error: error
+			code:    'unknown',
+			message: 'An unknown error occurred.',
+			data:    error
 		});
 
 	}
@@ -67,7 +60,9 @@ exports.register = async function(req, res, next) {
 	} catch (error) {
 
 		return res.status(500).send({
-			error: error
+			code:    'unknown',
+			message: 'An unknown error occurred.',
+			data:    error
 		});
 
 	}
@@ -109,7 +104,9 @@ exports.login = async function(req, res, next) {
 	} catch (error) {
 
 		return res.status(500).send({
-			error: error
+			code:    'unknown',
+			message: 'An unknown error occurred.',
+			data:    error
 		});
 
 	}
