@@ -1,21 +1,14 @@
-const express = require('express');
-const session = require('express-session');
-const mysql   = require('mysql');
-const dayjs   = require('dayjs');
-
-class shGame {
-
-}
+const database = require('../modules/database');
 
 exports.create = async function(req, res, next) {
 
 	const gameName    = String( req.body.name ?? '' ).trim(),
 	      gameStatus  = 'new',
 	      gameContent = {},
-		  connection  = dbConnection();
+		  connection  = database.getConnection();
 
 	// Check auth.
-	if ( !req.session.loggedIn ) {
+	if ( !req.session.userID ) {
 
 		return res.status(400).send({
 			code:    'not-logged-in',
@@ -24,7 +17,7 @@ exports.create = async function(req, res, next) {
 
 	}
 
-	const gameOwnerID = req.session.user.id;
+	const gameOwnerID = req.session.userID;
 
 	// Generate unique game code.
 	let gameCode,
@@ -36,13 +29,13 @@ exports.create = async function(req, res, next) {
 
 		try {
 
-			gameExists = await dbGetGameExists( connection, gameCode );
+			gameExists = await database.gameExists( connection, gameCode );
 	
 		} catch (error) {
 	
 			return res.status(500).send({
-				code:    'unknown',
-				message: 'An unknown error occurred.',
+				code:    'database-error',
+				message: 'A database error occurred.',
 				data:    error
 			});
 	
@@ -57,19 +50,19 @@ exports.create = async function(req, res, next) {
 
 	try {
 
-		gameID = await dbCreateGame( connection, {
+		gameID = await database.createGame( connection, {
 			name:    gameName,
 			code:    gameCode,
 			status:  gameStatus,
-			content: JSON.stringify( gameData ),
+			content: JSON.stringify( gameContent ),
 			owner:   gameOwnerID,
 		});
 
 	} catch (error) {
 
 		return res.status(500).send({
-			code:    'unknown',
-			message: 'An unknown error occurred.',
+			code:    'database-error',
+			message: 'A database error occurred.',
 			data:    error
 		});
 
@@ -78,7 +71,7 @@ exports.create = async function(req, res, next) {
 	// Create relationship between game and player.
 	try {
 
-		await dbCreatePlayer( connection, {
+		await database.createPlayer( connection, {
 			game_id:    gameID,
 			user_id:    gameOwnerID,
 		});
@@ -86,8 +79,8 @@ exports.create = async function(req, res, next) {
 	} catch (error) {
 
 		return res.status(500).send({
-			code:    'unknown',
-			message: 'An unknown error occurred.',
+			code:    'database-error',
+			message: 'A database error occurred.',
 			data:    error
 		});
 
@@ -124,69 +117,4 @@ const generateGameCode = function() {
 
 	return code;
 	
-}
-
-const dbConnection = function() {
-
-	return mysql.createConnection({
-		host     : process.env.DB_HOST,
-		user     : process.env.DB_USER,
-		password : process.env.DB_PASS,
-		database : process.env.DB_NAME
-	});
-
-}
-
-const dbGetGameExists = function( connection, gameCode ) {
-
-	return new Promise((resolve, reject) => {
-
-		connection.query(`SELECT COUNT(id) AS numExistingGames FROM games WHERE code = ?`, gameCode, function (error, results, fields) {
-
-			if (error) return reject(error);
-
-			gameExists = ( results[0].numExistingAccounts > 0 );
-
-			return resolve( gameExists );
-
-		});
-
-	});
-
-}
-
-const dbCreateGame = function( connection, gameData ) {
-
-	return new Promise((resolve, reject) => {
-
-		connection.query(`INSERT INTO games SET ?`, gameData, function (error, results, fields) {
-
-			if (error) return reject(error);
-
-			gameID = results.insertId;
-
-			return resolve( gameID );
-
-		});
-
-	});
-
-}
-
-const dbCreatePlayer = function( connection, playerData ) {
-
-	return new Promise((resolve, reject) => {
-
-		connection.query(`INSERT INTO players SET ?`, playerData, function (error, results, fields) {
-
-			if (error) return reject(error);
-
-			playerID = results.insertId;
-
-			return resolve( playerID );
-
-		});
-
-	});
-
 }

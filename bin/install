@@ -34,8 +34,8 @@ connection.query(sql, function (error, results, fields) {
 // GAMES
 sql = `CREATE TABLE \`games\` (
 	\`id\` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-	\`name\` varchar(60) NOT NULL DEFAULT '',
 	\`code\` varchar(60) NOT NULL DEFAULT '',
+	\`name\` varchar(60) NOT NULL DEFAULT '',
 	\`status\` varchar(60) NOT NULL DEFAULT '',
 	\`content\` longtext NOT NULL DEFAULT '',
 	\`owner\` bigint(20) UNSIGNED NOT NULL,

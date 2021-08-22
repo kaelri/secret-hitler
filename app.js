@@ -7,12 +7,12 @@ const session      = require('express-session');
 const mysqlStore   = require('express-mysql-session')(session);
 
 // ROUTES
-var indexRouter = require('./routes/index');
-var auth        = require('./modules/auth');
-var game        = require('./modules/game');
+const indexRouter = require('./routes/index');
+const auth        = require('./modules/auth');
+const game        = require('./modules/game');
 
 // APP
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

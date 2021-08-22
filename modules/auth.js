@@ -1,7 +1,5 @@
-const express = require('express');
-const session = require('express-session');
-const mysql   = require('mysql');
-const crypto  = require('crypto');
+const crypto   = require('crypto');
+const database = require('../modules/database');
 
 exports.register = async function(req, res, next) {
 
@@ -10,7 +8,7 @@ exports.register = async function(req, res, next) {
 	      userDisplay = String( req.body.display  ).trim(),
 	      password    = String( req.body.password ).trim(),
 	      userRoles   = [ 'player' ],
-		  connection  = dbConnection();
+		  connection  = database.getConnection();
 
 	let userId,
 	    userHash,
@@ -21,14 +19,14 @@ exports.register = async function(req, res, next) {
 
 	try {
 
-		userExists = await dbGetUserExists( connection, userName );
+		userExists = await database.userExists( connection, userName );
 
 	} catch (error) {
 
 		return res.status(500).send({
-			code:    'unknown',
-			message: 'An unknown error occurred.',
-			data:    error
+			code:    'database-error',
+			message: error.message,
+			stack:   error.stack
 		});
 
 	}
@@ -48,7 +46,7 @@ exports.register = async function(req, res, next) {
 
 	try {
 
-		userId = await dbCreateUser( connection, {
+		userId = await database.createUser( connection, {
 			name:    userName,
 			hash:    userHash,
 			salt:    userSalt,
@@ -60,9 +58,9 @@ exports.register = async function(req, res, next) {
 	} catch (error) {
 
 		return res.status(500).send({
-			code:    'unknown',
-			message: 'An unknown error occurred.',
-			data:    error
+			code:    'database-error',
+			message: error.message,
+			stack:   error.stack
 		});
 
 	}
@@ -78,12 +76,10 @@ exports.register = async function(req, res, next) {
 		roles:   userRoles
 	}
 
-	req.session.loggedIn = true;
-	req.session.userID   = user.id;
+	req.session.userID = user.id;
 
 	return res.status(200).send({
-		loggedIn: true,
-		user:     user
+		user: user
 	});
 
 };
@@ -92,26 +88,26 @@ exports.login = async function(req, res, next) {
 
 	const userName   = req.body.name,
 	      password   = req.body.password,
-		  connection = dbConnection();
+		  connection = database.getConnection();
 
 	// Check if user exists.
-	let userRows;
+	let userData;
 
 	try {
 
-		userRows = await dbGetUser( connection, userName );
+		userData = await database.getUserByName( connection, userName );
 
 	} catch (error) {
 
 		return res.status(500).send({
-			code:    'unknown',
-			message: 'An unknown error occurred.',
-			data:    error
+			code:    'database-error',
+			message: error.message,
+			stack:   error.stack
 		});
 
 	}
 
-	if ( !userRows.length ) {
+	if ( userData === false ) {
 
 		return res.status(400).send({
 			code: 'bad-credentials',
@@ -119,13 +115,11 @@ exports.login = async function(req, res, next) {
 		});
 
 	}
-
-	let userRow = userRows[0];
 
 	// Validate password.
-	let loginHash = crypto.pbkdf2Sync(password, userRow.salt, 1000, 64, `sha512`).toString(`hex`);
+	let loginHash = crypto.pbkdf2Sync(password, userData.salt, 1000, 64, `sha512`).toString(`hex`);
 	
-	if ( loginHash != userRow.hash ) {
+	if ( loginHash != userData.hash ) {
 
 		return res.status(400).send({
 			code: 'bad-credentials',
@@ -134,20 +128,21 @@ exports.login = async function(req, res, next) {
 
 	}
 
-	let user = {
-		id:      userRow.id,
-		name:    userRow.name,
-		email:   userRow.email,
-		display: userRow.display,
-		roles:   userRow.roles.split(',')
+	// Finish.
+	connection.end();
+
+	const user = {
+		id:      userData.id,
+		name:    userData.name,
+		email:   userData.email,
+		display: userData.display,
+		roles:   userData.roles.split(',')
 	}
 
-	req.session.loggedIn = true;
-	req.session.userID   = user.id;
+	req.session.userID = user.id;
 
 	return res.status(200).send({
-		loggedIn: true,
-		user:     user
+		user: user
 	});
 
 };
@@ -155,75 +150,45 @@ exports.login = async function(req, res, next) {
 exports.logout = async function (req, res, next) {
 
 	req.session.destroy(function(){
-		res.status(200).send({
-			loggedIn: false,
-			user:     null
-		});
+		res.status(200).send({});
 	});
 
 }
 
-const dbConnection = function() {
+exports.getLoggedInUser = async function ( session ) {
 
-	return mysql.createConnection({
-		host     : process.env.DB_HOST,
-		user     : process.env.DB_USER,
-		password : process.env.DB_PASS,
-		database : process.env.DB_NAME
-	});
+	// Get user.
+	let userID = session.userID ?? null,
+		user   = null;
 
-}
+	if ( !userID ) return null;
 
-const dbCreateUser = function( connection, userData ) {
+	const connection = database.getConnection();
 
-	return new Promise((resolve, reject) => {
+	let userData;
 
-		connection.query(`INSERT INTO users SET ?`, userData, function (error, results, fields) {
+	try {
 
-			if (error) return reject(error);
+		userData = await database.getUserByID( connection, userID );
 
-			userId = results.insertId;
+	} catch (err) {
 
-			return resolve( userId );
+		console.error(err.message, err.stack);
 
-		});
+	}
 
-	});
+	connection.end();
 
-}
+	if ( !userData ) return null;
 
-const dbGetUser = function( connection, userName ) {
+	user = {
+		id:      userData.id,
+		name:    userData.name,
+		email:   userData.email,
+		display: userData.display,
+		roles:   userData.roles.split(',')
+	}
 
-	return new Promise((resolve, reject) => {
-
-		console.log(userName);
-
-		connection.query(`SELECT * FROM users WHERE name = ?`, userName, function (error, results, fields) {
-
-			if (error) return reject(error);
-
-			return resolve( results );
-
-		});
-
-	});
-
-}
-
-const dbGetUserExists = function( connection, userName ) {
-
-	return new Promise((resolve, reject) => {
-
-		connection.query(`SELECT COUNT(id) AS numExistingAccounts FROM users WHERE name = ?`, userName, function (error, results, fields) {
-
-			if (error) return reject(error);
-
-			userExists = ( results[0].numExistingAccounts > 0 );
-
-			return resolve( userExists );
-
-		});
-
-	});
+	return user;
 
 }

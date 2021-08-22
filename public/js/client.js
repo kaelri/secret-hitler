@@ -7,8 +7,7 @@ new Vue({
 	data: {
 
 		// AUTHENTICATION
-		loggedIn: secretHitlerData.loggedIn ?? false,
-		user:     secretHitlerData.user     ?? null,
+		user: secretHitlerData.user ?? null,
 
 		// UI
 		view: 'home',
@@ -28,6 +27,14 @@ new Vue({
 
 		// GAME
 		game: null,
+
+	},
+
+	computed: {
+
+		loggedIn() {
+			return ( this.user !== null );
+		}
 
 	},
 
@@ -138,8 +145,7 @@ new Vue({
 
 					switch ( call.status ) {
 						case 200:
-							self.loggedIn = call.response.loggedIn
-							self.user     = call.response.user
+							self.user = call.response.user
 							self.setView('home');
 							break;
 						case 400:
@@ -168,8 +174,7 @@ new Vue({
 					
 					switch ( call.status ) {
 						case 200:
-							self.loggedIn = call.response.loggedIn
-							self.user     = call.response.user
+							self.user = call.response.user
 							self.setView('home');
 							break;
 						case 400:
@@ -195,8 +200,7 @@ new Vue({
 					
 					switch ( call.status ) {
 						case 200:
-							self.loggedIn = call.response.loggedIn
-							self.user     = call.response.user
+							self.user = null;
 							self.setView('home');
 							break;
 						case 400:
