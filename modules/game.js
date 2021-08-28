@@ -2,7 +2,7 @@ const database = require('../modules/database');
 
 exports.create = async function(req, res, next) {
 
-	const gameName    = String( req.body.name ?? '' ).trim(),
+	const gameName    = String( req.body.name || '' ).trim(),
 	      gameStatus  = 'new',
 	      gameContent = {},
 		  connection  = database.getConnection();

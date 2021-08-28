@@ -7,7 +7,7 @@ new Vue({
 	data: {
 
 		// AUTHENTICATION
-		user: secretHitlerData.user ?? null,
+		user: secretHitlerData.user || null,
 
 		// UI
 		view: 'home',

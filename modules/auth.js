@@ -158,7 +158,7 @@ exports.logout = async function (req, res, next) {
 exports.getLoggedInUser = async function ( session ) {
 
 	// Get user.
-	let userID = session.userID ?? null,
+	let userID = session.userID || null,
 		user   = null;
 
 	if ( !userID ) return null;
