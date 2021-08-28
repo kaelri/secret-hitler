@@ -1,7 +1,10 @@
 {
   "name": "secret-hitler",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.1",
+  "description": "The Secret Hitler tabletop game for the web.",
+  "homepage": "https://github.com/kaelri/secret-hitler/",
+  "license": "CC-BY-NC-SA-4.0",
+  "repository": "github:kaelri/secret-hitler",
   "scripts": {
     "start": "node ./bin/www",
     "install": "node ./bin/install",
