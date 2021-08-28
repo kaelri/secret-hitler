@@ -11,18 +11,21 @@ Secret Hitler is licensed under [Creative Commons BY–NC–SA 4.0](https://crea
 In `.env`:
 
 ```ini
-NODE_ENV=development                # "development" or "production".
+NODE_ENV=development                   # "development" or "production".
 
-APP_URL=https://www.yourdomain.com  # Your server URI.
-APP_PORT=443                        # "80" (http) or "443" (https).
-APP_SESSION_SECRET=secret           # Any string.
-APP_SERVER=npm                      # "npm" or "passenger".
+APP_SERVER=npm                         # "npm" or "passenger".
+APP_URL=http://www.secrethitler.local  # Your server URI.
+APP_PORT=8080                          # Defaults to "8080". For production, use "80" for HTTP or "443" for HTTPS.
+APP_SSL=false                          # "true" enables HTTPS server with SSL certificates defined below. 
+APP_SSL_CERTIFICATE=ssl/server.crt     # Path to SSL certificate.
+APP_SSL_KEY=ssl/server.key             # Path to SSL key.
+APP_SESSION_SECRET=secret              # Any string. Used to encrypt session cookies.
 
-DB_HOST=localhost                   # Your MySQL/MariaDB host host. Defaults to "localhost".
-DB_PORT=3306                        # Your MySQL/MariaDB host port. Defaults to "3306".
-DB_NAME=secrethitler                # Your MySQL/MariaDB database name.
-DB_USER=secrethitler                # Your MySQL/MariaDB username.
-DB_PASS=secrethitler                # Your MySQL/MariaDB password.
+DB_HOST=localhost                      # Your MySQL/MariaDB host host. Defaults to "localhost".
+DB_PORT=3306                           # Your MySQL/MariaDB host port. Defaults to "3306".
+DB_NAME=secrethitler                   # Your MySQL/MariaDB database name.
+DB_USER=secrethitler                   # Your MySQL/MariaDB username.
+DB_PASS=password                       # Your MySQL/MariaDB password.
 ```
 
 Secret Hitler needs a MySQL/MariaDB database. Run the installation script (`npm run install`) to set up the database using the credentials defined in your environment file.
