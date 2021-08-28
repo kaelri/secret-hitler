@@ -72,4 +72,9 @@ app.use(function(err, req, res, next) {
 	res.render('error');
 });
 
+// On Dreamhost, the Passenger framework starts app.js directly instead of starting from ./bin/www.
+if ( process.env.APP_SERVER && process.env.APP_SERVER === 'passenger') {
+    app.listen(3000);
+}
+
 module.exports = app;
