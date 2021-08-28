@@ -1,6 +1,8 @@
 # Secret Hitler
 
-_[Secret Hitler](https://www.secrethitler.com/)_ is a hidden identity social deduction party game developed by Goat, Wolf, & Cabbage LLC.
+> _Secret Hitler_ is a hidden identity social deduction party game developed by Goat, Wolf, & Cabbage LLC.
+
+This is a playable web implementation of the _[Secret Hitler](https://www.secrethitler.com/)_ tabletop game. It is built in Node.js, using the [Express](https://expressjs.com/) framework and a [Vue.js](https://vuejs.org/) front-end.
 
 ## License
 
