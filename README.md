@@ -16,7 +16,7 @@ In `.env`:
 NODE_ENV=development                   # "development" or "production".
 
 APP_SERVER=npm                         # "npm" or "passenger".
-APP_URL=http://www.secrethitler.local  # Your server URI.
+APP_URL=http://www.secrethitler.local  # Your server URL.
 APP_PORT=8080                          # For production, use "80" for HTTP or "443" for HTTPS.
 APP_SSL=false                          # "true" enables SSL-secured HTTPS server. 
 APP_SSL_CERTIFICATE=ssl/server.crt     # Path to SSL certificate.
