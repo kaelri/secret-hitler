@@ -5,17 +5,7 @@ const auth     = require('../modules/auth');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
 
-	let user;
-
-	try {
-
-		user = await auth.getLoggedInUser( req.session );
-
-	} catch (error) {
-
-		console.error( error.message );
-
-	}
+	let user = await auth.getLoggedInUser( req );
 
 	res.render('index', {
 		title:   'Secret Hitler',

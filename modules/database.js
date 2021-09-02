@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const users = require('./users');
 
 exports.getConnection = function() {
 
@@ -11,17 +12,26 @@ exports.getConnection = function() {
 
 }
 
-exports.createUser = function( connection, userData ) {
+exports.createUser = function( connection, data ) {
 
 	return new Promise((resolve, reject) => {
 
-		connection.query(`INSERT INTO users SET ?`, userData, function (error, results, fields) {
+		let row = {
+			name:    data.name,
+			email:   data.email,
+			display: data.display,
+			roles:   data.roles.join(','),
+			salt:    data.salt,
+			hash:    data.hash,
+		}
+
+		connection.query(`INSERT INTO users SET ?`, row, function (error, results, fields) {
 
 			if (error) return reject(error);
 
-			userId = results.insertId;
+			let id = results.insertId;
 
-			return resolve( userId );
+			return resolve( id );
 
 		});
 
@@ -29,35 +39,37 @@ exports.createUser = function( connection, userData ) {
 
 }
 
-exports.getUserByID = function( connection, userID ) {
+exports.getUserBy = function( key, value, connection ) {
+
+	console.log( key, value );
 
 	return new Promise((resolve, reject) => {
 
-		connection.query(`SELECT * FROM users WHERE id = ?`, userID, function (error, results, fields) {
+		// Only accept unique keys: "id" or "name".
+		if ( [ 'id', 'name' ].indexOf(key) == -1 ) {
+			reject( new Error('invalid-key') );
+		}
+
+		connection.query(`SELECT * FROM users WHERE ${key} = ?`, value, function (error, results, fields) {
 
 			if (error) return reject(error);
 
 			if ( !results.length ) return resolve(false);
+
+			let row = results[0];
+
+			let data = {
+				id:      row.id,
+				name:    row.name,
+				email:   row.email,
+				display: row.display,
+				roles:   row.roles.split(','),
+				hash:    row.hash,
+				salt:    row.salt,
+				created: row.created,
+			}
 			
-			return resolve( results[0] );
-
-		});
-
-	});
-
-}
-
-exports.getUserByName = function( connection, userName ) {
-
-	return new Promise((resolve, reject) => {
-
-		connection.query(`SELECT * FROM users WHERE name = ?`, userName, function (error, results, fields) {
-
-			if (error) return reject(error);
-
-			if ( !results.length ) return resolve(false);
-			
-			return resolve( results[0] );
+			return resolve( data );
 
 		});
 
