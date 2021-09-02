@@ -1,4 +1,4 @@
-const users = require('./users');
+const User = require('./user');
 
 exports.register = async function(req, res, next) {
 
@@ -13,7 +13,7 @@ exports.register = async function(req, res, next) {
 	try {
 			  
 		// Check if user exists.
-		let userExists = await users.exists( name );
+		let userExists = await User.exists( name );
 
 		if ( userExists ) {
 
@@ -25,7 +25,7 @@ exports.register = async function(req, res, next) {
 		}
 
 		// Create user.
-		user = await users.create({
+		user = await User.create({
 			name:     name,
 			email:    email,
 			display:  display,
@@ -62,7 +62,7 @@ exports.login = async function(req, res, next) {
 
 	try {
 
-		user = await users.get( 'name', name );
+		user = await User.get( 'name', name );
 
 	} catch (error) {
 
@@ -119,7 +119,7 @@ exports.getLoggedInUser = async function ( req ) {
 
 	if ( !id ) return null;
 
-	let user = await users.get( 'id', id );
+	let user = await User.get( 'id', id );
 
 	return user;
 

@@ -31,8 +31,6 @@ exports.createUser = function( connection, data ) {
 
 exports.getUserBy = function( key, value, connection ) {
 
-	console.log( key, value );
-
 	return new Promise((resolve, reject) => {
 
 		// Only accept unique keys: "id" or "name".
