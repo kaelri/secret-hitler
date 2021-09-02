@@ -62,7 +62,7 @@ exports.login = async function(req, res, next) {
 
 	try {
 
-		user = await users.get({ name: name });
+		user = await users.get( 'name', name );
 
 	} catch (error) {
 

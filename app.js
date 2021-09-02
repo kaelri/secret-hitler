@@ -11,7 +11,7 @@ const mysqlStore   = require('express-mysql-session')(session);
 // ROUTES
 const indexRouter = require('./routes/index');
 const auth        = require('./modules/auth');
-const game        = require('./modules/game');
+const games       = require('./modules/games');
 
 // APP
 const app = express();
@@ -57,7 +57,7 @@ app.use( '/', indexRouter );
 app.post( '/auth/register', auth.register );
 app.post( '/auth/login',    auth.login    );
 app.post( '/auth/logout',   auth.logout   );
-app.post( '/game/create',   game.create   );
+app.post( '/games/create',  games.create  );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

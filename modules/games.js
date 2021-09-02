@@ -1,4 +1,21 @@
-const database = require('../modules/database');
+const database = require('./database');
+
+class Game {
+
+	constructor( data = {} ) {
+		this.id       = data.id       || 0;
+		this.code     = data.code     || '';
+		this.name     = data.name     || '';
+		this.status   = data.status   || 'new';
+		this.content  = data.content  || {};
+		this.owner    = data.owner    || 0;
+		this.created  = data.created  || new Date();
+		this.modified = data.modified || new Date();
+	}
+
+}
+
+exports.Game = Game;
 
 exports.create = async function(req, res, next) {
 

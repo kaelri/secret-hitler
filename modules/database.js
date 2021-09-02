@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-const users = require('./users');
 
 exports.getConnection = function() {
 
@@ -16,16 +15,7 @@ exports.createUser = function( connection, data ) {
 
 	return new Promise((resolve, reject) => {
 
-		let row = {
-			name:    data.name,
-			email:   data.email,
-			display: data.display,
-			roles:   data.roles.join(','),
-			salt:    data.salt,
-			hash:    data.hash,
-		}
-
-		connection.query(`INSERT INTO users SET ?`, row, function (error, results, fields) {
+		connection.query(`INSERT INTO users SET ?`, data, function (error, results, fields) {
 
 			if (error) return reject(error);
 
@@ -56,19 +46,8 @@ exports.getUserBy = function( key, value, connection ) {
 
 			if ( !results.length ) return resolve(false);
 
-			let row = results[0];
+			let data = results[0];
 
-			let data = {
-				id:      row.id,
-				name:    row.name,
-				email:   row.email,
-				display: row.display,
-				roles:   row.roles.split(','),
-				hash:    row.hash,
-				salt:    row.salt,
-				created: row.created,
-			}
-			
 			return resolve( data );
 
 		});

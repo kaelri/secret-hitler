@@ -3,15 +3,16 @@ const database = require('./database');
 
 class User {
 
+	// Construct from database row.
 	constructor( data = {} ) {
-		this.id      = data.id      || 0;
-		this.name    = data.name    || '';
-		this.email   = data.email   || '';
-		this.display = data.display || '';
-		this.roles   = data.roles   || [];
-		this.salt    = data.salt    || '';
-		this.hash    = data.hash    || '';
-		this.created = data.created || new Date();
+		this.id      = data.id;
+		this.name    = data.name;
+		this.email   = data.email;
+		this.display = data.display;
+		this.roles   = data.roles.split(',');
+		this.salt    = data.salt;
+		this.hash    = data.hash;
+		this.created = data.created;
 	}
 
 	validatePassword( password ) {
@@ -30,7 +31,6 @@ class User {
 			name:    this.name,
 			email:   this.email,
 			display: this.display,
-			roles:   this.roles
 		}
 	}
 
@@ -38,31 +38,24 @@ class User {
 
 exports.User = User;
 
-exports.create = async function( data ) {
+exports.create = async function( input ) {
 
 	const connection = database.getConnection();
 
-	let salt = crypto.randomBytes(16).toString('hex'),
-	    hash = crypto.pbkdf2Sync( data.password, salt, 1000, 64, `sha512`).toString(`hex`);
+	const salt = crypto.randomBytes(16).toString('hex'),
+	      hash = crypto.pbkdf2Sync( input.password, salt, 1000, 64, `sha512`).toString(`hex`);
 
-	let id = await database.createUser( connection, {
-		name:    data.name,
-		email:   data.email,
-		display: data.display,
-		roles:   data.roles,
+	const id = await database.createUser( connection, {
+		name:    input.name,
+		email:   input.email,
+		display: input.display,
+		roles:   input.roles.join(','),
 		salt:    salt,
 		hash:    hash,
 	});
 
-	const user = new User({
-		id:      id,
-		name:    data.name,
-		email:   data.email,
-		display: data.display,
-		roles:   data.roles,
-		salt:    salt,
-		hash:    hash,
-	});
+	const data = await database.getUserBy( 'id', id, connection ),
+	      user = new User(data);
 
 	connection.end();
 
@@ -78,16 +71,7 @@ exports.get = async function( key, value ) {
 
 	if ( !data ) return null;
 
-	const user = new User({
-		id:      data.id,
-		name:    data.name,
-		email:   data.email,
-		display: data.display,
-		roles:   data.roles,
-		hash:    data.hash,
-		salt:    data.salt,
-		created: data.created,
-	});
+	const user = new User(data);
 
 	connection.end();
 
