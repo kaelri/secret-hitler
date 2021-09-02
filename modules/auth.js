@@ -112,15 +112,19 @@ exports.logout = async function (req, res, next) {
 
 }
 
-exports.getLoggedInUser = async function ( req ) {
+exports.get = async function ( req, res, next ) {
 
 	// Get user.
-	let id = req.session.userID || null;
+	let user;
+	
+	const id = req.session.userID || null;
 
-	if ( !id ) return null;
+	if ( id ) {
+		user = await User.get( 'id', id );
+	}
 
-	let user = await User.get( 'id', id );
-
-	return user;
+	return res.status(200).send({
+		user: user ? user.export() : null
+	});
 
 }

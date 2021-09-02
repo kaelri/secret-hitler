@@ -7,7 +7,7 @@ new Vue({
 	data: {
 
 		// AUTHENTICATION
-		user: secretHitlerData.user || null,
+		user: null,
 
 		// UI
 		view: 'home',
@@ -119,6 +119,12 @@ new Vue({
 
 	</article>`,
 
+	mounted() {
+
+		this.getUser();
+
+	},
+
 	methods: {
 
 		isView( viewID ) {
@@ -127,6 +133,31 @@ new Vue({
 
 		setView( viewID ) {
 			this.view = viewID;
+		},
+
+		getUser() {
+
+			let self = this;
+
+			new Portal({
+				endpoint: '/auth/get',
+				body: {},
+				callback( call ) {
+
+					switch ( call.status ) {
+						case 200:
+							self.user = call.response.user
+							break;
+						case 400:
+							console.info(call.response.code);
+							break;
+						default:
+							console.error( 'Something went wrong.', call );
+					}
+
+				},
+			});
+
 		},
 
 		register() {

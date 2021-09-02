@@ -57,7 +57,8 @@ app.use( '/', indexRouter );
 app.post( '/auth/register', auth.register );
 app.post( '/auth/login',    auth.login    );
 app.post( '/auth/logout',   auth.logout   );
-app.post( '/game/create',   Game.create  );
+app.post( '/auth/get',      auth.get      );
+app.post( '/game/create',   Game.create   );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
