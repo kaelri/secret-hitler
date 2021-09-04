@@ -4,7 +4,7 @@ module.exports = class Database {
 
 	// CONNECTION
 
-	static connection;
+	// static connection;
 
 	static openConnection() {
 
@@ -40,7 +40,7 @@ module.exports = class Database {
 
 	// USERS
 
-	static createUser = function( data ) {
+	static createUser( data ) {
 
 		const connection = this.getConnection();
 
@@ -60,7 +60,7 @@ module.exports = class Database {
 
 	}
 
-	static getUserBy = function( key, value ) {
+	static getUserBy( key, value ) {
 
 		const connection = this.getConnection();
 
@@ -87,7 +87,7 @@ module.exports = class Database {
 
 	}
 
-	static userExists = function( name ) {
+	static userExists( name ) {
 
 		const connection = this.getConnection();
 
@@ -109,7 +109,7 @@ module.exports = class Database {
 
 	// GAMES
 
-	static createGame = function( data ) {
+	static createGame( data ) {
 
 		const connection = this.getConnection();
 
@@ -129,7 +129,7 @@ module.exports = class Database {
 
 	}
 
-	static createPlayer = function( data ) {
+	static createPlayer( data ) {
 
 		const connection = this.getConnection();
 
@@ -149,7 +149,7 @@ module.exports = class Database {
 
 	}
 
-	static getGameBy = function( key, value ) {
+	static getGameBy( key, value ) {
 
 		const connection = this.getConnection();
 
@@ -176,7 +176,7 @@ module.exports = class Database {
 
 	}
 
-	static gameExists = function( code ) {
+	static gameExists( code ) {
 
 		const connection = this.getConnection();
 
