@@ -7,11 +7,7 @@ const cookieParser = require('cookie-parser');
 const logger       = require('morgan');
 const session      = require('express-session');
 const mysqlStore   = require('express-mysql-session')(session);
-
-// ROUTES
-const indexRouter = require('./routes/index');
-const auth        = require('./modules/auth');
-const Game        = require('./modules/game');
+const router       = require('./routes/index');
 
 // APP
 const app = express();
@@ -19,14 +15,16 @@ const app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
-/*
-app.use(logger('common', {
-    stream: fs.createWriteStream('./debug.log', {flags: 'a'})
-}));
-*/
-
 app.use(logger('dev'));
+
+if ( process.env.APP_LOG && process.env.APP_LOG !== 'false') {
+
+	app.use(logger('common', {
+		stream: fs.createWriteStream(process.env.APP_LOG, {flags: 'a'})
+	}));
+
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -50,15 +48,8 @@ app.use(session({
 	}
 }));
 
-// WEB
-app.use( '/', indexRouter );
-
-// REST
-app.post( '/auth/register', auth.register );
-app.post( '/auth/login',    auth.login    );
-app.post( '/auth/logout',   auth.logout   );
-app.post( '/auth/get',      auth.get      );
-app.post( '/game/create',   Game.create   );
+// Router
+app.use( '/', router );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,137 +1,90 @@
-const database = require('./database');
+const Database = require('./database');
 
-class Game {
+module.exports = class Game {
 
-	constructor( data = {} ) {
-		this.id       = data.id       || 0;
-		this.code     = data.code     || '';
-		this.name     = data.name     || '';
-		this.status   = data.status   || 'new';
-		this.content  = data.content  || {};
-		this.owner    = data.owner    || 0;
-		this.created  = data.created  || new Date();
-		this.modified = data.modified || new Date();
+	constructor( data ) {
+		this.id       = data.id;
+		this.code     = data.code;
+		this.name     = data.name;
+		this.status   = data.status;
+		this.content  = data.content;
+		this.owner    = data.owner;
+		this.created  = data.created;
+		this.modified = data.modified;
 	}
 
-}
+	static async create( input ) {
 
-exports.Game = Game;
+		const connection = Database.getConnection();
 
-exports.create = async function(req, res, next) {
+		const code    = await this.generateCode( connection ),
+		      content = {};
 
-	const gameName    = String( req.body.name || '' ).trim(),
-	      gameStatus  = 'new',
-	      gameContent = {},
-		  connection  = database.getConnection();
-
-	// Check auth.
-	if ( !req.session.userID ) {
-
-		return res.status(400).send({
-			code:    'not-logged-in',
-			message: 'You must be logged in to create a new game.'
-		});
-
-	}
-
-	const gameOwnerID = req.session.userID;
-
-	// Generate unique game code.
-	let gameCode,
-	    gameCodeIsUnique = false;
-
-	while ( !gameCodeIsUnique ) {
-
-		gameCode = generateGameCode();
-
-		try {
-
-			gameExists = await database.gameExists( connection, gameCode );
+		// Create game.
+		const id = await Database.createGame({
+			name:    input.name,
+			owner:   input.owner,
+			code:    code,
+			status:  'new',
+			content: JSON.stringify( content ),
+		}, connection );
 	
-		} catch (error) {
+		const data = await Database.getGameBy( 'id', id, connection ),
+			  game = new this(data);
 	
-			return res.status(500).send({
-				code:    'database-error',
-				message: 'A database error occurred.',
-				data:    error
-			});
+		// Create relationship between game and player.
+		const relationship = await Database.createPlayer({
+			game_id: game.id,
+			user_id: game.owner,
+		}, connection );
+
+		// Finish.
+		Database.closeConnection();
 	
+		return game;
+	
+	};
+
+	export( userID = null ) {
+		return {
+			id:       this.id,
+			code:     this.code,
+			name:     this.name,
+			status:   this.status,
+			content:  this.content,
+			owner:    this.owner,
+			created:  this.created,
+			modified: this.modified,
 		}
+	}
 
-		if ( !gameExists ) gameCodeIsUnique = true;
+	static async generateCode( connection ) {
 	
+		let code,
+		    codeIsUnique = false;
+	
+		const length     = 6,
+			  characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	
+		while ( !codeIsUnique ) {
+	
+			code = '';
+	
+			for ( var i = 0; i < length; i++ ) {
+				code += characters.charAt(Math.floor(Math.random() * characters.length));
+			}
+		
+			gameExists = await Database.gameExists( code, connection );
+		
+			if ( !gameExists ) {
+				codeIsUnique = true;
+				break;
+			}
+		
+		}
+	
+		return code;
+		
 	}
-
-	// Create game.
-	let gameID;
-
-	try {
-
-		gameID = await database.createGame( connection, {
-			name:    gameName,
-			code:    gameCode,
-			status:  gameStatus,
-			content: JSON.stringify( gameContent ),
-			owner:   gameOwnerID,
-		});
-
-	} catch (error) {
-
-		return res.status(500).send({
-			code:    'database-error',
-			message: 'A database error occurred.',
-			data:    error
-		});
-
-	}
-
-	// Create relationship between game and player.
-	try {
-
-		await database.createPlayer( connection, {
-			game_id:    gameID,
-			user_id:    gameOwnerID,
-		});
-
-	} catch (error) {
-
-		return res.status(500).send({
-			code:    'database-error',
-			message: 'A database error occurred.',
-			data:    error
-		});
-
-	}
-
-	// Finish.
-	connection.end();
-
-	const game = {
-		id:      gameID,
-		code:    gameCode,
-		name:    gameName,
-		status:  gameStatus,
-		content: gameContent,
-		owner:   gameOwnerID
-	}
-
-	return res.status(200).send({
-		game: game
-	});
-
-};
-
-const generateGameCode = function() {
-
-	let code = '';
-
-	const length     = 6,
-	      characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-	for ( var i = 0; i < length; i++ ) {
-		code += characters.charAt(Math.floor(Math.random() * characters.length));
-	}
-
-	return code;
 	
 }
