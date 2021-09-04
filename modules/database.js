@@ -22,7 +22,7 @@ module.exports = class Database {
 	static getConnection() {
 
 		if ( !this.connection ) {
-			throw new Error('no-open-connection');
+			this.openConnection();
 		}
 
 		return this.connection;
