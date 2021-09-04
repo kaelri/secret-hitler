@@ -149,7 +149,7 @@ new Vue({
 							self.user = call.response.user
 							break;
 						case 400:
-							console.info(call.response.code);
+							self.user = null;
 							break;
 						default:
 							console.error( 'Something went wrong.', call );

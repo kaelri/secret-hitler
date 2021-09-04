@@ -22,6 +22,7 @@ APP_SSL=false                          # "true" enables SSL-secured HTTPS server
 APP_SSL_CERTIFICATE=ssl/server.crt     # Path to SSL certificate.
 APP_SSL_KEY=ssl/server.key             # Path to SSL key.
 APP_SESSION_SECRET=secret              # Any string. Used to encrypt session cookies.
+APP_LOG=false                          # Log will attempt to write to any path other than "false".
 
 DB_HOST=localhost                      # Your MySQL/MariaDB host host. Defaults to "localhost".
 DB_PORT=3306                           # Your MySQL/MariaDB host port. Defaults to "3306".
