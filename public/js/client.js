@@ -140,7 +140,7 @@ new Vue({
 			let self = this;
 
 			new Portal({
-				endpoint: '/user/get',
+				endpoint: '/rest/user/get',
 				body: {},
 				callback( call ) {
 
@@ -165,7 +165,7 @@ new Vue({
 			let self = this;
 
 			new Portal({
-				endpoint: '/user/new',
+				endpoint: '/rest/user/new',
 				body: {
 					name:     this.registerName,
 					password: this.registerPassword,
@@ -200,7 +200,7 @@ new Vue({
 			let self = this;
 
 			new Portal({
-				endpoint: '/user/login',
+				endpoint: '/rest/user/login',
 				body: {
 					name:     this.loginName,
 					password: this.loginPassword,
@@ -231,7 +231,7 @@ new Vue({
 			let self = this;
 
 			new Portal({
-				endpoint: '/user/logout',
+				endpoint: '/rest/user/logout',
 				body: {},
 				callback( call ) {
 					
@@ -257,7 +257,7 @@ new Vue({
 			let self = this;
 
 			new Portal({
-				endpoint: '/game/new',
+				endpoint: '/rest/game/new',
 				body: {
 					name: this.newName
 				},

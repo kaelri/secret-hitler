@@ -13,7 +13,9 @@ router.get('/', async function(req, res, next) {
 
 });
 
-router.post('/user/new', async function register(req, res, next) {
+// USERS
+
+router.post('/rest/user/new', async function register(req, res, next) {
 
 	const name     = String( req.body.name     ).trim(),
 		  email    = String( req.body.email    ).trim(),
@@ -65,7 +67,7 @@ router.post('/user/new', async function register(req, res, next) {
 
 });
 
-router.post('/user/login', async function login(req, res, next) {
+router.post('/rest/user/login', async function login(req, res, next) {
 
 	const name     = String( req.body.name     ).trim(),
 		  password = String( req.body.password ).trim();
@@ -117,7 +119,7 @@ router.post('/user/login', async function login(req, res, next) {
 
 });
 
-router.post('/user/logout', async function logout(req, res, next) {
+router.post('/rest/user/logout', async function logout(req, res, next) {
 
 	req.session.destroy(function(){
 		res.status(200).send({});
@@ -125,7 +127,7 @@ router.post('/user/logout', async function logout(req, res, next) {
 
 });
 
-router.post('/user/get', async function getUser( req, res, next ) {
+router.post('/rest/user/get', async function getUser( req, res, next ) {
 
 	// Get user.
 	const user = await User.getCurrent( req );
@@ -145,7 +147,9 @@ router.post('/user/get', async function getUser( req, res, next ) {
 
 });
 
-router.post('/game/new', async function newGame( req, res, next ) {
+// GAMES
+
+router.post('/rest/game/new', async function newGame( req, res, next ) {
 
 	const name = String( req.body.name || '' ).trim(),
 		  user = await User.getCurrent( req );

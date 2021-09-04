@@ -41,22 +41,6 @@
 		text-decoration: inherit;
 	}
 
-// FLEXBOX SHORTCODES
-
-	@mixin flex-layout ( $flex-direction: row, $flex-wrap: nowrap, $justify-content: flex-start, $align-items: stretch ) {
-		display: flex;
-		flex-direction:  $flex-direction ;
-		flex-wrap:  $flex-wrap ;
-		justify-content:  $justify-content ;
-		align-items:  $align-items ;
-	}
-
-	@mixin flex-children ( $flex: 0 1 auto ) {
-		& > * {
-			flex:  $flex ;
-		}
-	}
-
 // UNSTYLED LIST
 
 	@mixin no-list-style {
