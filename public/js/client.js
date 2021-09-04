@@ -176,7 +176,11 @@ new Vue({
 
 					switch ( call.status ) {
 						case 200:
-							self.user = call.response.user
+							self.user             = call.response.user;
+							self.registerName     = '';
+							self.registerPassword = '';
+							self.registerEmail    = '';
+							self.registerDisplay  = '';
 							self.setView('home');
 							break;
 						case 400:
@@ -205,7 +209,9 @@ new Vue({
 					
 					switch ( call.status ) {
 						case 200:
-							self.user = call.response.user
+							self.user          = call.response.user
+							self.loginName     = '';
+							self.loginPassword = '';
 							self.setView('home');
 							break;
 						case 400:
@@ -259,7 +265,8 @@ new Vue({
 
 					switch ( call.status ) {
 						case 200:
-							self.game = call.response.game
+							self.game    = call.response.game;
+							self.newName = '';
 							self.setView('game');
 							break;
 						case 400:

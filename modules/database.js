@@ -6,17 +6,23 @@ module.exports = class Database {
 
 	static connection;
 
+	static openConnection() {
+
+		if ( this.connection ) return;
+
+		this.connection = mysql.createConnection({
+			host:     process.env.DB_HOST,
+			user:     process.env.DB_USER,
+			password: process.env.DB_PASS,
+			database: process.env.DB_NAME
+		});
+
+	}
+
 	static getConnection() {
 
 		if ( !this.connection ) {
-
-			this.connection = mysql.createConnection({
-				host:     process.env.DB_HOST,
-				user:     process.env.DB_USER,
-				password: process.env.DB_PASS,
-				database: process.env.DB_NAME
-			});
-
+			throw new Error('no-open-connection');
 		}
 
 		return this.connection;
@@ -34,7 +40,9 @@ module.exports = class Database {
 
 	// USERS
 
-	static createUser = function( data, connection ) {
+	static createUser = function( data ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
@@ -52,7 +60,9 @@ module.exports = class Database {
 
 	}
 
-	static getUserBy = function( key, value, connection ) {
+	static getUserBy = function( key, value ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
@@ -77,15 +87,17 @@ module.exports = class Database {
 
 	}
 
-	static userExists = function( name, connection ) {
+	static userExists = function( name ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
-			connection.query(`SELECT COUNT(id) AS numExistingAccounts FROM users WHERE name = ?`, name, function (error, results, fields) {
+			connection.query(`SELECT COUNT(id) AS numExistingUsers FROM users WHERE name = ?`, name, function (error, results, fields) {
 
 				if (error) return reject(error);
 
-				userExists = ( results[0].numExistingAccounts > 0 );
+				let userExists = ( results[0].numExistingUsers > 0 );
 
 				return resolve( userExists );
 
@@ -97,7 +109,9 @@ module.exports = class Database {
 
 	// GAMES
 
-	static createGame = function( data, connection ) {
+	static createGame = function( data ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
@@ -105,7 +119,7 @@ module.exports = class Database {
 
 				if (error) return reject(error);
 
-				id = results.insertId;
+				let id = results.insertId;
 
 				return resolve( id );
 
@@ -115,7 +129,9 @@ module.exports = class Database {
 
 	}
 
-	static createPlayer = function( data, connection ) {
+	static createPlayer = function( data ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
@@ -123,7 +139,7 @@ module.exports = class Database {
 
 				if (error) return reject(error);
 
-				id = results.insertId;
+				let id = results.insertId;
 
 				return resolve( id );
 
@@ -133,7 +149,9 @@ module.exports = class Database {
 
 	}
 
-	static getGameBy = function( key, value, connection ) {
+	static getGameBy = function( key, value ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
@@ -158,7 +176,9 @@ module.exports = class Database {
 
 	}
 
-	static gameExists = function( connection, code ) {
+	static gameExists = function( code ) {
+
+		const connection = this.getConnection();
 
 		return new Promise((resolve, reject) => {
 
@@ -166,7 +186,7 @@ module.exports = class Database {
 
 				if (error) return reject(error);
 
-				gameExists = ( results[0].numExistingAccounts > 0 );
+				let gameExists = ( results[0].numExistingGames > 0 );
 
 				return resolve( gameExists );
 

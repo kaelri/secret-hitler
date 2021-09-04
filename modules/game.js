@@ -15,9 +15,7 @@ module.exports = class Game {
 
 	static async create( input ) {
 
-		const connection = Database.getConnection();
-
-		const code    = await this.generateCode( connection ),
+		const code    = await this.generateCode(),
 		      content = {};
 
 		// Create game.
@@ -27,20 +25,18 @@ module.exports = class Game {
 			code:    code,
 			status:  'new',
 			content: JSON.stringify( content ),
-		}, connection );
+		});
 	
-		const data = await Database.getGameBy( 'id', id, connection ),
+		const data = await Database.getGameBy( 'id', id ),
 			  game = new this(data);
 	
 		// Create relationship between game and player.
 		const relationship = await Database.createPlayer({
 			game_id: game.id,
 			user_id: game.owner,
-		}, connection );
+		});
 
 		// Finish.
-		Database.closeConnection();
-	
 		return game;
 	
 	};
@@ -58,7 +54,7 @@ module.exports = class Game {
 		}
 	}
 
-	static async generateCode( connection ) {
+	static async generateCode() {
 	
 		let code,
 		    codeIsUnique = false;
@@ -74,7 +70,7 @@ module.exports = class Game {
 				code += characters.charAt(Math.floor(Math.random() * characters.length));
 			}
 		
-			gameExists = await Database.gameExists( code, connection );
+			let gameExists = await Database.gameExists( code );
 		
 			if ( !gameExists ) {
 				codeIsUnique = true;

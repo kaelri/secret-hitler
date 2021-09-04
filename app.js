@@ -8,6 +8,7 @@ const logger       = require('morgan');
 const session      = require('express-session');
 const mysqlStore   = require('express-mysql-session')(session);
 const router       = require('./routes/index');
+const Database     = require('./modules/database');
 
 // APP
 const app = express();
@@ -48,12 +49,34 @@ app.use(session({
 	}
 }));
 
+// Open and close database connection.
+app.use(function (req, res, next) {
+
+    function afterResponse() {
+
+        res.removeListener( 'finish', afterResponse );
+        res.removeListener( 'close',  afterResponse );
+
+        Database.closeConnection();
+
+    }
+
+    res.on( 'finish', afterResponse );
+    res.on( 'close',  afterResponse );
+
+    Database.openConnection();
+    next();
+
+});
+
 // Router
 app.use( '/', router );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+
 	next(createError(404));
+	
 });
 
 // error handler

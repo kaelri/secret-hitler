@@ -36,8 +36,6 @@ module.exports = class User {
 
 	static async create( input ) {
 
-		const connection = Database.getConnection();
-	
 		const salt = crypto.randomBytes(16).toString('hex'),
 			  hash = crypto.pbkdf2Sync( input.password, salt, 1000, 64, `sha512`).toString(`hex`);
 	
@@ -48,12 +46,10 @@ module.exports = class User {
 			roles:   input.roles.join(','),
 			salt:    salt,
 			hash:    hash,
-		}, connection );
+		});
 	
-		const data = await Database.getUserBy( 'id', id, connection ),
+		const data = await Database.getUserBy( 'id', id ),
 			  user = new this(data);
-	
-		Database.closeConnection();
 	
 		return user;
 	
@@ -61,15 +57,11 @@ module.exports = class User {
 	
 	static async get( key, value ) {
 	
-		const connection = Database.getConnection();
-	
-		let data = await Database.getUserBy( key, value, connection );
+		let data = await Database.getUserBy( key, value );
 	
 		if ( !data ) return null;
 	
 		const user = new this(data);
-	
-		Database.closeConnection();
 	
 		return user;
 	
@@ -77,11 +69,7 @@ module.exports = class User {
 	
 	static async exists( name ) {
 	
-		const connection = Database.getConnection();
-	
-		let exists = await Database.userExists( name, connection );
-	
-		Database.closeConnection();
+		let exists = await Database.userExists( name );
 	
 		return exists;
 	
@@ -93,7 +81,7 @@ module.exports = class User {
 
 		if ( !id ) return null;
 
-		let user = await User.get( 'id', id );
+		let user = await this.get( 'id', id );
 		
 		return user;
 

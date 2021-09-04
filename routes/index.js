@@ -1,7 +1,7 @@
-const express = require('express');
-const router  = express.Router();
-const User    = require('../modules/user');
-const Game    = require('../modules/game');
+const express  = require('express');
+const router   = express.Router();
+const User     = require('../modules/user');
+const Game     = require('../modules/game');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -24,7 +24,7 @@ router.post('/user/new', async function register(req, res, next) {
 	let user;
 
 	try {
-			
+
 		// Check if user exists.
 		let userExists = await User.exists( name );
 
