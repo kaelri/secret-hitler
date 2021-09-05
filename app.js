@@ -26,19 +26,20 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 
 if ( process.env.APP_LOG && process.env.APP_LOG !== 'false') {
-
 	app.use(logger('common', {
 		stream: fs.createWriteStream(process.env.APP_LOG, {flags: 'a'})
 	}));
-
 }
+
+// CORS
+app.use(cors());
+app.options('*', cors());
 
 // Express features
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
 
 // Sessions
 const session = expressSession({
@@ -102,55 +103,67 @@ app.use(function(err, req, res, next) {
 });
 
 // Start HTTP(S) server.
-let server;
+let server,
+    usingPassenger = ( typeof(PhusionPassenger) != 'undefined' ),
+	usingSSL       = ( process.env.APP_SSL && process.env.APP_SSL === 'true' );
 
-switch ( process.env.APP_SERVER ) {
-
+const port = normalizePort(process.env.APP_PORT || '8080');
+app.set('port', port );
+	
+if ( usingPassenger ) {
+	
 	// On Dreamhost, the Passenger framework starts app.js directly instead of starting from ./bin/www.
-	case 'passenger':
+	server = app.listen( 3000 );
 
-		server = app.listen( 3000 );
+} else if ( usingSSL ) {
 
-		break;
+	// HTTPS
+	server = https.createServer({
+		cert: fs.readFileSync( process.env.APP_SSL_CERTIFICATE, 'utf-8'),
+		key:  fs.readFileSync( process.env.APP_SSL_KEY,         'utf-8')
+	}, app).listen( 443 );
 
-	default:
+} else {
 
-		const port = normalizePort(process.env.APP_PORT || '8080');
-		app.set('port', port);
-		
-		if ( process.env.APP_SSL && process.env.APP_SSL === 'true') {
-
-			// HTTPS
-			server = https.createServer({
-				cert: fs.readFileSync( process.env.APP_SSL_CERTIFICATE, 'utf-8'),
-				key:  fs.readFileSync( process.env.APP_SSL_KEY,         'utf-8')
-			}, app).listen( port );
-
-			// Backup HTTP server redirects to HTTPS.
-			const httpApp = express()
-			.set('port', 80)
-			.get('*', function(req, res) {
-				res.redirect( process.env.APP_URL + req.url);
-			});
-			
-			const httpServer = http.createServer( {}, httpApp ).listen( 80 );
-
-		} else {
-		
-			server = http.createServer( {}, app ).listen( port );
-		
-		}
-		
-		break;
+	server = http.createServer( {}, app ).listen( 80 );
 
 }
 
 server.on( 'error',     onError     );
 server.on( 'listening', onListening );
 
-// Set up sockets.
-Socket.setup( server, session );
+// Sockets server listens on a separate port.
+let socketServer;
+
+if ( usingSSL ) {
+
+	socketServer = https.createServer({
+		cert: fs.readFileSync( process.env.APP_SSL_CERTIFICATE, 'utf-8'),
+		key:  fs.readFileSync( process.env.APP_SSL_KEY,         'utf-8')
+	}, app).listen( 8080 );
+
+} else {
+
+	socketServer = http.createServer( {}, app ).listen( 8080 );
 	
+}
+
+Socket.setup( socketServer, session );
+
+// Backup HTTP server redirects to SSH.
+if ( usingSSL && !usingPassenger ) {
+
+	// Backup HTTP server redirects to HTTPS.
+	const httpApp = express()
+	.set('port', 80)
+	.get('*', function(req, res) {
+		res.redirect( process.env.APP_URL + req.url);
+	});
+	
+	const httpServer = http.createServer( {}, httpApp ).listen( 80 );
+
+}
+
 /**
  * Normalize a port into a number, string, or false.
  */

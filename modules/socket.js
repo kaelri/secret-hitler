@@ -7,7 +7,12 @@ module.exports = class Socket {
 
 	static setup( server, session ) {
 		
-		this.io = new Server( server );
+		this.io = new Server( server, {
+			cors: {
+				origin:  '*',
+				methods: ['GET', 'POST']
+			}
+		});
 
 		this.io.use(sharedsession(session, {
 			autoSave:true
@@ -19,14 +24,10 @@ module.exports = class Socket {
 
 			const userID = socket.handshake.session.userID;
 
-			console.log(`User ${userID} has connected.`);
-
 			// Join a "room" with the user’s ID to make it easier to target this socket.
 			socket.join(`user-${userID}`);
 
-			socket.on('disconnect', () => {
-				console.log(`User ${userID} has disconnected.`);
-			});
+			// socket.on('disconnect', () => {});
 
 		});
 
