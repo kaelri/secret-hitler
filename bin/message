@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+// DEPENDENCIES
+const dotenv = require('dotenv').config();
+const axios  = require('axios');
+
+async function sendMessage() {
+
+	let message = process.argv.slice(2).join("\n");
+
+	console.log(message);
+
+	return await axios({
+		method: 'post',
+		url:    process.env.APP_URL + '/dev/message',
+		data:   { text: message },
+	});
+
+}
+
+sendMessage();

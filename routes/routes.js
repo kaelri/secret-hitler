@@ -1,8 +1,8 @@
-const express  = require('express');
-const router   = express.Router();
-const User     = require('../modules/user');
-const Game     = require('../modules/game');
-const Socket   = require('../modules/socket');
+const express = require('express');
+const router  = express.Router();
+const User    = require('../modules/user');
+const Game    = require('../modules/game');
+const Socket  = require('../modules/socket');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -114,8 +114,6 @@ router.post('/rest/user/login', async function login(req, res, next) {
 	// Finish.
 	req.session.userID = user.id;
 
-	Socket.io.emit( 'message', 'A user has logged on!', user.name );
-
 	return res.status(200).send({
 		user: user.export()
 	});
@@ -188,6 +186,18 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 	return res.status(200).send({
 		game: game.export()
 	});
+
+});
+
+// DEV
+
+router.post('/dev/message', async function newGame( req, res, next ) {
+
+	const text = String( req.body.text || '' ).trim();
+
+	Socket.io.emit( 'dev-message', text );
+
+	return res.status(200).send();
 
 });
 

@@ -15,15 +15,16 @@ module.exports = class Socket {
 
 		this.io.on('connection', (socket) => {
 
-			// console.log('new socket with session', socket.handshake.session );
+			console.log(`User ${socket.handshake.session.userID} has connected.`);
 
-			// socket.on('disconnect', () => {});
+			// Join a "room" with the user’s ID to make it easier to target this socket.
+			socket.join(`user-${socket.handshake.session.userID}`);
+
+			socket.on('disconnect', () => {
+				console.log(`User ${socket.handshake.session.userID} has disconnected.`);
+			});
 
 		});
-
-	}
-
-	static shareSession( session ) {
 
 	}
 

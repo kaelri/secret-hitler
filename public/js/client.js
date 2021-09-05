@@ -124,10 +124,6 @@ new Vue({
 
 		this.getUser();
 
-		this.socket = io();
-
-		this.socket.on('message', console.log);
-
 	},
 
 	methods: {
@@ -138,6 +134,25 @@ new Vue({
 
 		setView( viewID ) {
 			this.view = viewID;
+		},
+
+		openSocket() {
+
+			if ( this.socket ) return;
+
+			this.socket = io();
+
+			this.socket.on('dev-message', console.log);
+
+		},
+
+		closeSocket() {
+			
+			if ( this.socket ) {
+				this.socket.disconnect();
+				this.socket = null;
+			}
+
 		},
 
 		getUser() {
@@ -151,10 +166,12 @@ new Vue({
 
 					switch ( call.status ) {
 						case 200:
-							self.user = call.response.user
+							self.user = call.response.user;
+							self.openSocket();
 							break;
 						case 400:
 							self.user = null;
+							self.closeSocket();
 							break;
 						default:
 							console.error( 'Something went wrong.', call );
@@ -183,7 +200,7 @@ new Vue({
 						case 200:
 
 							self.user = call.response.user;
-							self.socket.emit( 'loggedIn', call.response.user.id );
+							self.openSocket();
 
 							self.registerName     = '';
 							self.registerPassword = '';
@@ -222,7 +239,7 @@ new Vue({
 						case 200:
 
 							self.user = call.response.user;
-							self.socket.emit( 'loggedIn', call.response.user.id );
+							self.openSocket();
 
 							self.loginName     = '';
 							self.loginPassword = '';
@@ -255,6 +272,7 @@ new Vue({
 					switch ( call.status ) {
 						case 200:
 							self.user = null;
+							self.closeSocket();
 							self.setView('home');
 							break;
 						case 400:
