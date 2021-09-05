@@ -1,22 +1,29 @@
-const { Server } = require('socket.io');
+const { Server }    = require('socket.io');
+const sharedsession = require('express-socket.io-session');
 
 module.exports = class Socket {
 
 	// static io;
 
-	static init( httpServer ) {
+	static setup( server, session ) {
 		
-		this.io = new Server( httpServer );
-	
+		this.io = new Server( server );
+
+		this.io.use(sharedsession(session, {
+			autoSave:true
+		}));
+
 		this.io.on('connection', (socket) => {
 
-			console.log('a user connected');
+			// console.log('new socket with session', socket.handshake.session );
 
-			socket.on('disconnect', () => {
-				console.log('user disconnected');
-			});
+			// socket.on('disconnect', () => {});
 
 		});
+
+	}
+
+	static shareSession( session ) {
 
 	}
 

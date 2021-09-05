@@ -152,7 +152,6 @@ new Vue({
 					switch ( call.status ) {
 						case 200:
 							self.user = call.response.user
-							// self.socket.emit();
 							break;
 						case 400:
 							self.user = null;
@@ -182,13 +181,19 @@ new Vue({
 
 					switch ( call.status ) {
 						case 200:
-							self.user             = call.response.user;
+
+							self.user = call.response.user;
+							self.socket.emit( 'loggedIn', call.response.user.id );
+
 							self.registerName     = '';
 							self.registerPassword = '';
 							self.registerEmail    = '';
 							self.registerDisplay  = '';
+
 							self.setView('home');
+
 							break;
+
 						case 400:
 							console.info(call.response.code);
 							break;
@@ -215,11 +220,17 @@ new Vue({
 					
 					switch ( call.status ) {
 						case 200:
-							self.user          = call.response.user
+
+							self.user = call.response.user;
+							self.socket.emit( 'loggedIn', call.response.user.id );
+
 							self.loginName     = '';
 							self.loginPassword = '';
+
 							self.setView('home');
+
 							break;
+
 						case 400:
 							console.info(call.response.code);
 							break;
