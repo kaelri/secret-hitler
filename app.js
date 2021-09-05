@@ -103,29 +103,34 @@ app.use(function(err, req, res, next) {
 });
 
 // Start HTTP(S) server.
-let server,
+let port,
+    server,
     usingPassenger = ( typeof(PhusionPassenger) != 'undefined' ),
-	usingSSL       = ( process.env.APP_SSL && process.env.APP_SSL === 'true' );
+	usingSSL       = ( process.env.SSL && process.env.SSL === 'true' );
 
-const port = normalizePort(process.env.APP_PORT || '8080');
-app.set('port', port );
-	
 if ( usingPassenger ) {
-	
-	// On Dreamhost, the Passenger framework starts app.js directly instead of starting from ./bin/www.
-	server = app.listen( 3000 );
+
+	PhusionPassenger.configure({ autoInstall: false });
+
+	server = app.listen( 8080 );
 
 } else if ( usingSSL ) {
 
+	port = normalizePort( process.env.SSL_PORT || 443 );
+	app.set('port', port );
+		
 	// HTTPS
 	server = https.createServer({
-		cert: fs.readFileSync( process.env.APP_SSL_CERTIFICATE, 'utf-8'),
-		key:  fs.readFileSync( process.env.APP_SSL_KEY,         'utf-8')
-	}, app).listen( 443 );
+		cert: fs.readFileSync( process.env.SSL_CERTIFICATE, 'utf-8'),
+		key:  fs.readFileSync( process.env.SSL_KEY,         'utf-8')
+	}, app).listen( port );
 
 } else {
 
-	server = http.createServer( {}, app ).listen( 80 );
+	port = normalizePort( process.env.APP_PORT || 80 );
+	app.set('port', port );
+		
+	server = http.createServer( {}, app ).listen( port );
 
 }
 
@@ -133,18 +138,25 @@ server.on( 'error',     onError     );
 server.on( 'listening', onListening );
 
 // Sockets server listens on a separate port.
-let socketServer;
+let socketPort = normalizePort( process.env.WS_PORT || 8080 ),
+    socketServer; 
 
-if ( usingSSL ) {
+console.log( socketPort, port );
+
+if ( socketPort === port ) {
+
+	socketServer = server;
+
+} else if ( usingSSL ) {
 
 	socketServer = https.createServer({
-		cert: fs.readFileSync( process.env.APP_SSL_CERTIFICATE, 'utf-8'),
-		key:  fs.readFileSync( process.env.APP_SSL_KEY,         'utf-8')
-	}, app).listen( 8080 );
+		cert: fs.readFileSync( process.env.SSL_CERTIFICATE, 'utf-8'),
+		key:  fs.readFileSync( process.env.SSL_KEY,         'utf-8')
+	}, app).listen( socketPort );
 
 } else {
 
-	socketServer = http.createServer( {}, app ).listen( 8080 );
+	socketServer = http.createServer( {}, app ).listen( socketPort );
 	
 }
 

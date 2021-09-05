@@ -140,7 +140,7 @@ new Vue({
 
 			if ( this.socket ) return;
 
-			this.socket = io( 'https://secrethitler.kaelri.local:8080' );
+			this.socket = io();
 
 			this.socket.on('dev-message', console.log);
 
