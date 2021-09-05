@@ -2,6 +2,7 @@ const express  = require('express');
 const router   = express.Router();
 const User     = require('../modules/user');
 const Game     = require('../modules/game');
+const Socket   = require('../modules/socket');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -112,6 +113,8 @@ router.post('/rest/user/login', async function login(req, res, next) {
 
 	// Finish.
 	req.session.userID = user.id;
+
+	Socket.io.emit( 'message', 'A user has logged on!', user.name );
 
 	return res.status(200).send({
 		user: user.export()

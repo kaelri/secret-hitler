@@ -6,8 +6,9 @@ new Vue({
 
 	data: {
 
-		// AUTHENTICATION
-		user: null,
+		// AUTHENTICATION & CONNECTION
+		user:   null,
+		socket: null,
 
 		// UI
 		view: 'home',
@@ -123,6 +124,10 @@ new Vue({
 
 		this.getUser();
 
+		this.socket = io();
+
+		this.socket.on('message', console.log);
+
 	},
 
 	methods: {
@@ -147,6 +152,7 @@ new Vue({
 					switch ( call.status ) {
 						case 200:
 							self.user = call.response.user
+							// self.socket.emit();
 							break;
 						case 400:
 							self.user = null;

@@ -9,6 +9,7 @@ const session      = require('express-session');
 const mysqlStore   = require('express-mysql-session')(session);
 const router       = require('./routes/routes');
 const Database     = require('./modules/database');
+const Socket       = require('./modules/socket');
 
 // APP
 const app = express();
@@ -92,7 +93,8 @@ app.use(function(err, req, res, next) {
 
 // On Dreamhost, the Passenger framework starts app.js directly instead of starting from ./bin/www.
 if ( process.env.APP_SERVER && process.env.APP_SERVER === 'passenger') {
-    app.listen(3000);
+    const server = app.listen(3000);
+	Socket.init( server );
 }
 
 module.exports = app;
