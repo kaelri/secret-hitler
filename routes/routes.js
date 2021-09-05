@@ -191,7 +191,7 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 
 // DEV
 
-router.post('/dev/message', async function newGame( req, res, next ) {
+router.post('/rest/dev/message', async function newGame( req, res, next ) {
 
 	const text = String( req.body.text || '' ).trim();
 

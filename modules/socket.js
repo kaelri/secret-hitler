@@ -15,13 +15,17 @@ module.exports = class Socket {
 
 		this.io.on('connection', (socket) => {
 
-			console.log(`User ${socket.handshake.session.userID} has connected.`);
+			if ( !socket.handshake.session || !socket.handshake.session.userID ) return;
+
+			const userID = socket.handshake.session.userID;
+
+			console.log(`User ${userID} has connected.`);
 
 			// Join a "room" with the user’s ID to make it easier to target this socket.
-			socket.join(`user-${socket.handshake.session.userID}`);
+			socket.join(`user-${userID}`);
 
 			socket.on('disconnect', () => {
-				console.log(`User ${socket.handshake.session.userID} has disconnected.`);
+				console.log(`User ${userID} has disconnected.`);
 			});
 
 		});

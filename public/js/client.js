@@ -147,7 +147,7 @@ new Vue({
 		},
 
 		closeSocket() {
-			
+
 			if ( this.socket ) {
 				this.socket.disconnect();
 				this.socket = null;
