@@ -58,4 +58,4 @@ connection.query(sql, function (error, results, fields) {
 // Finish.
 console.log(`“${process.env.DB_NAME}” database installed!`);
  
-Database.closeConnection();
+connection.end();

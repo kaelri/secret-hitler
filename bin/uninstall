@@ -15,4 +15,4 @@ connection.query(sql, function (error, results, fields) {
 
 console.log(`“${process.env.DB_NAME}” database uninstalled.`);
  
-Database.closeConnection();
+connection.end();
