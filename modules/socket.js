@@ -1,5 +1,4 @@
-const { Server }    = require('socket.io');
-const sharedsession = require('express-socket.io-session');
+const { Server } = require('socket.io');
 
 module.exports = class Socket {
 
@@ -14,20 +13,26 @@ module.exports = class Socket {
 			}
 		});
 
-		this.io.use(sharedsession(session, {
-			autoSave:true
-		}));
+		this.io.use(function(socket, next) {
+			 session(socket.request, {}, next);
+		 });
 
 		this.io.on('connection', (socket) => {
 
-			if ( !socket.handshake.session || !socket.handshake.session.userID ) return;
+			const session = socket.request.session;
 
-			const userID = socket.handshake.session.userID;
+			if ( !session.userID ) return;
+
+			const userID = session.userID;
+
+			console.log( `User ${userID} has logged in.` );
 
 			// Join a "room" with the user’s ID to make it easier to target this socket.
-			socket.join(`user-${userID}`);
-
-			// socket.on('disconnect', () => {});
+			socket.join(`user${userID}`);
+			
+			socket.on('disconnect', () => {
+				console.log( `User ${userID} has logged out.` );
+			});
 
 		});
 

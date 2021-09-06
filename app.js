@@ -12,7 +12,6 @@ const cookieParser   = require('cookie-parser');
 const logger         = require('morgan');
 const router         = require('./routes/routes');
 const cors           = require('cors');
-const Database       = require('./modules/database');
 const Socket         = require('./modules/socket');
 
 // APP

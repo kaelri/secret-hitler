@@ -138,17 +138,9 @@ router.post('/rest/user/get', async function getUser( req, res, next ) {
 	// Get user.
 	const user = await User.getCurrent( req );
 
-	if ( !user ) {
-
-		return res.status(400).send({
-			code:    'not-logged-in',
-			message: 'You are not logged in.'
-		});
-
-	}
-
 	return res.status(200).send({
-		user: user.export()
+		loggedIn: ( user !== null ),
+		user:     user ? user.export() : null,
 	});
 
 });

@@ -167,12 +167,10 @@ new Vue({
 
 					switch ( call.status ) {
 						case 200:
-							self.user = call.response.user;
-							self.openSocket();
-							break;
-						case 400:
-							self.user = null;
-							self.closeSocket();
+							if ( call.response.loggedIn ) {
+								self.user = call.response.user;
+								self.openSocket();
+							}
 							break;
 						default:
 							console.error( 'Something went wrong.', call );
