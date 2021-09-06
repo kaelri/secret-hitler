@@ -10,8 +10,8 @@ mix
   }
 })
 .combine([
-	'lib/portal.js',
 	'lib/socket/socket.io.min.js',
+	'client/portal.js',
 	'client/client.js',
 ], 'public/scripts.js' )
 .disableNotifications();
