@@ -4,37 +4,14 @@ module.exports = class Database {
 
 	// CONNECTION
 
-	// static connection;
+	static getConnection() {
 
-	static openConnection() {
-
-		if ( this.connection ) return;
-
-		this.connection = mysql.createConnection({
+		return mysql.createConnection({
 			host:     process.env.DB_HOST,
 			user:     process.env.DB_USER,
 			password: process.env.DB_PASS,
 			database: process.env.DB_NAME
 		});
-
-	}
-
-	static getConnection() {
-
-		if ( !this.connection ) {
-			this.openConnection();
-		}
-
-		return this.connection;
-
-	}
-
-	static closeConnection() {
-
-		if ( this.connection ) {
-			this.connection.end();
-			this.connection = null;
-		}
 
 	}
 
@@ -47,6 +24,8 @@ module.exports = class Database {
 		return new Promise((resolve, reject) => {
 
 			connection.query(`INSERT INTO users SET ?`, data, function (error, results, fields) {
+
+				connection.end();
 
 				if (error) return reject(error);
 
@@ -73,6 +52,8 @@ module.exports = class Database {
 
 			connection.query(`SELECT * FROM users WHERE ${key} = ?`, value, function (error, results, fields) {
 
+				connection.end();
+
 				if (error) return reject(error);
 
 				if ( !results.length ) return resolve(false);
@@ -94,6 +75,8 @@ module.exports = class Database {
 		return new Promise((resolve, reject) => {
 
 			connection.query(`SELECT COUNT(id) AS numExistingUsers FROM users WHERE name = ?`, name, function (error, results, fields) {
+
+				connection.end();
 
 				if (error) return reject(error);
 
@@ -117,6 +100,8 @@ module.exports = class Database {
 
 			connection.query(`INSERT INTO games SET ?`, data, function (error, results, fields) {
 
+				connection.end();
+
 				if (error) return reject(error);
 
 				let id = results.insertId;
@@ -136,6 +121,8 @@ module.exports = class Database {
 		return new Promise((resolve, reject) => {
 
 			connection.query(`INSERT INTO players SET ?`, data, function (error, results, fields) {
+
+				connection.end();
 
 				if (error) return reject(error);
 
@@ -162,6 +149,8 @@ module.exports = class Database {
 
 			connection.query(`SELECT * FROM games WHERE ${key} = ?`, value, function (error, results, fields) {
 
+				connection.end();
+
 				if (error) return reject(error);
 
 				if ( !results.length ) return resolve(false);
@@ -183,6 +172,8 @@ module.exports = class Database {
 		return new Promise((resolve, reject) => {
 
 			connection.query(`SELECT COUNT(id) AS numExistingGames FROM games WHERE code = ?`, code, function (error, results, fields) {
+
+				connection.end();
 
 				if (error) return reject(error);
 

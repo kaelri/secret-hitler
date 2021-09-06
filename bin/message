@@ -10,7 +10,7 @@ async function sendMessage() {
 
 	return await axios({
 		method: 'post',
-		url:    'https://secrethitler.kaelri.local/rest/dev/message/',
+		url:    `${process.env.APP_URL}/rest/dev/message/`,
 		data:   { text: message },
 	});
 

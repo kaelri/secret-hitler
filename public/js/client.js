@@ -143,7 +143,7 @@ new Vue({
 
 			this.socket = io( this.socketURL );
 
-			this.socket.on('dev-message', console.log);
+			this.socket.on('dev-message', (message) => console.log( `[Dev Message] ${message}` ) );
 
 		},
 

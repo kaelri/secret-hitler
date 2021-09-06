@@ -61,26 +61,6 @@ const session = expressSession({
 
 app.use( session );
 
-// Open and close database connection.
-app.use(function (req, res, next) {
-
-    function afterResponse() {
-
-        res.removeListener( 'finish', afterResponse );
-        res.removeListener( 'close',  afterResponse );
-
-        Database.closeConnection();
-
-    }
-
-    res.on( 'finish', afterResponse );
-    res.on( 'close',  afterResponse );
-
-    Database.openConnection();
-    next();
-
-});
-
 // Define routes.
 app.use( '/', router );
 
