@@ -110,13 +110,17 @@ let port,
 
 if ( usingPassenger ) {
 
-	PhusionPassenger.configure({ autoInstall: false });
+	PhusionPassenger.configure({
+		autoInstall: false
+	});
 
-	server = app.listen( 8080 );
+	// port   = 8080;
+	port   = 'passenger';
+	server = app.listen( port );
 
 } else if ( usingSSL ) {
 
-	port = normalizePort( process.env.SSL_PORT || 443 );
+	port = normalizePort( process.env.SSL_PORT );
 	app.set('port', port );
 		
 	// HTTPS
@@ -127,7 +131,7 @@ if ( usingPassenger ) {
 
 } else {
 
-	port = normalizePort( process.env.APP_PORT || 80 );
+	port = normalizePort( process.env.APP_PORT );
 	app.set('port', port );
 		
 	server = http.createServer( {}, app ).listen( port );
@@ -138,10 +142,8 @@ server.on( 'error',     onError     );
 server.on( 'listening', onListening );
 
 // Sockets server listens on a separate port.
-let socketPort = normalizePort( process.env.WS_PORT || 8080 ),
+let socketPort = normalizePort( process.env.WS_PORT ),
     socketServer; 
-
-console.log( socketPort, port );
 
 if ( socketPort === port ) {
 
@@ -165,14 +167,15 @@ Socket.setup( socketServer, session );
 // Backup HTTP server redirects to SSH.
 if ( usingSSL && !usingPassenger ) {
 
-	// Backup HTTP server redirects to HTTPS.
+	const httpPort = normalizePort( process.env.APP_PORT );
+
 	const httpApp = express()
-	.set('port', 80)
+	.set('port', httpPort)
 	.get('*', function(req, res) {
 		res.redirect( process.env.APP_URL + req.url);
 	});
 	
-	const httpServer = http.createServer( {}, httpApp ).listen( 80 );
+	const httpServer = http.createServer( {}, httpApp ).listen( httpPort );
 
 }
 

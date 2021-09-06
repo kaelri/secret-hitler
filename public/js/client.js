@@ -7,8 +7,9 @@ new Vue({
 	data: {
 
 		// AUTHENTICATION & CONNECTION
-		user:   null,
-		socket: null,
+		user:      null,
+		socket:    null,
+		socketURL: secretHitlerData.socketURL,
 
 		// UI
 		view: 'home',
@@ -140,7 +141,7 @@ new Vue({
 
 			if ( this.socket ) return;
 
-			this.socket = io();
+			this.socket = io( this.socketURL );
 
 			this.socket.on('dev-message', console.log);
 

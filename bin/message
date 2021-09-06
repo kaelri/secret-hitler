@@ -8,8 +8,6 @@ async function sendMessage() {
 
 	let message = process.argv.slice(2).join("\n");
 
-	console.log(message);
-
 	return await axios({
 		method: 'post',
 		url:    'https://secrethitler.kaelri.local/rest/dev/message/',

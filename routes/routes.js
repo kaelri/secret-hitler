@@ -7,9 +7,14 @@ const Socket  = require('../modules/socket');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
 
+	vueData = {
+		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`
+	}
+
 	res.render('index', {
 		title:   'Secret Hitler',
 		vueURL:  ( process.env.NODE_ENV == 'development' ) ? '//cdn.jsdelivr.net/npm/vue/dist/vue.js' : '//cdn.jsdelivr.net/npm/vue',
+		vueData: vueData,
 	});
 
 });
