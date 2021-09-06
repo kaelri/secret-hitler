@@ -6,13 +6,11 @@ new Vue({
 
 	data: {
 
-		// AUTHENTICATION & CONNECTION
 		user:      null,
+		game:      null,
 		socket:    null,
 		socketURL: secretHitlerData.socketURL,
-
-		// UI
-		view: 'home',
+		view:      'home',
 
 		// REGISTER
 		registerName:     '',
@@ -23,12 +21,6 @@ new Vue({
 		// LOGIN
 		loginName:     '',
 		loginPassword: '',
-
-		// NEW GAME
-		newName: '',
-
-		// GAME
-		game: null,
 
 	},
 
@@ -52,54 +44,24 @@ new Vue({
 
 		</header>
 
-		<section id="home" v-show="isView('home')">
+		<sh-home
+			v-show="isView('home')"
+			@setView="setView"
+		></sh-home>
 
-			<h2>Games</h2>
+		<sh-create
+			v-show="isView('create')"
+			@setView="setView"
+			@setGame="setGame"
+		></sh-create>
 
-			<a href @click.prevent="setView('create')">New Game</a>
+		<sh-register
+			v-show="isView('register')"
+			@setView="setView"
+			@setUser="setUser"
+		></sh-register>
 
-		</section>
-
-		<section id="create" v-show="isView('create')">
-
-			<h2>New Game</h2>
-
-			<div>
-				<label for="new-name">Game Name (optional)</label>
-				<input type="text" name="new-name" v-model="newName">
-			</div>
-
-			<button type="button" @click.prevent="createGame">Create game</button>
-
-		</section>
-
-		<section id="login" v-show="isView('register')">
-
-			<h2>Register</h2>
-
-			<div>
-				<label for="register-name">Username</label>
-				<input type="text" name="register-name" v-model="registerName">
-			</div>
-
-			<div>
-				<label for="register-password">Password</label>
-				<input type="password" name="register-password" v-model="registerPassword">
-			</div>
-
-			<div>
-				<label for="register-email">Email</label>
-				<input type="email" name="email" v-model="registerEmail">
-			</div>
-
-			<div>
-				<label for="register-display">Display Name</label>
-				<input type="text" name="display" v-model="registerDisplay">
-			</div>
-
-			<button type="button" @click.prevent="register">Register</button>
-
-		</section>
+		
 
 		<section id="login" v-show="isView('login')">
 
@@ -183,43 +145,6 @@ new Vue({
 
 		register() {
 
-			let self = this;
-
-			new Portal({
-				endpoint: '/rest/user/new',
-				body: {
-					name:     this.registerName,
-					password: this.registerPassword,
-					email:    this.registerEmail,
-					display:  this.registerDisplay,
-				},
-				callback( call ) {
-
-					switch ( call.status ) {
-						case 200:
-
-							self.user = call.response.user;
-							self.openSocket();
-
-							self.registerName     = '';
-							self.registerPassword = '';
-							self.registerEmail    = '';
-							self.registerDisplay  = '';
-
-							self.setView('home');
-
-							break;
-
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
-					}
-
-				},
-			});
-
 		},
 
 		login() {
@@ -286,33 +211,16 @@ new Vue({
 
 		},
 
-		createGame() {
+		setUser( user ) {
 
-			let self = this;
+			this.user = user;
 
-			new Portal({
-				endpoint: '/rest/game/new',
-				body: {
-					name: this.newName
-				},
-				callback( call ) {
+			if ( user ) this.openSocket();
 
-					switch ( call.status ) {
-						case 200:
-							self.game    = call.response.game;
-							self.newName = '';
-							self.setView('game');
-							break;
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
-					}
+		},
 
-				},
-			});
-
+		setGame( game ) {
+			this.game = game;
 		},
 
 	},
