@@ -3,13 +3,11 @@ html
   head
     title= title
     link#google-fonts(src='https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap')
-    link(rel='stylesheet', href='/css/style.css')
+    link(rel='stylesheet', href='/style.css')
     script#vue(src=vueURL)
-    script#portal(src='/js/portal.js')
     script#font-awesome-5(src='//use.fontawesome.com/releases/v5.15.2/js/all.js')
-    script#socket(src='/lib/socket/socket.io.js')
   body
     article#secret-hitler
     script.
       var secretHitlerData = !{JSON.stringify(vueData)}
-    script#secret-hitler-js(src='/js/client.js')
+    script#secret-hitler-js(src='/scripts.js')

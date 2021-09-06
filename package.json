@@ -9,6 +9,8 @@
     "start": "node ./bin/www",
     "install": "node ./bin/install",
     "uninstall": "node ./bin/uninstall",
+    "build": "npx mix",
+    "watch": "npx mix watch",
     "message": "node ./bin/message"
   },
   "dependencies": {
@@ -22,12 +24,15 @@
     "express-mysql-session": "^2.1.6",
     "express-session": "^1.17.2",
     "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
+    "jade": "^0.29.0",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "socket.io": "^4.2.0"
   },
   "devDependencies": {
-    "axios": "^0.21.3"
+    "axios": "^0.21.3",
+    "laravel-mix": "^6.0.29",
+    "sass": "^1.39.0",
+    "sass-loader": "^12.1.0"
   }
 }

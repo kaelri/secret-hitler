@@ -1,2 +1,5 @@
-docs
-ssl
+/docs
+/lib
+/ssl
+/public/scripts.js
+/public/style.css
