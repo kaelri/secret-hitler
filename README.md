@@ -15,14 +15,17 @@ In `.env`:
 ```ini
 NODE_ENV=development                   # "development" or "production".
 
-APP_SERVER=npm                         # "npm" or "passenger".
 APP_URL=http://www.secrethitler.local  # Your server URL.
-APP_PORT=8080                          # For production, use "80" for HTTP or "443" for HTTPS.
-APP_SSL=false                          # "true" enables SSL-secured HTTPS server. 
-APP_SSL_CERTIFICATE=ssl/server.crt     # Path to SSL certificate.
-APP_SSL_KEY=ssl/server.key             # Path to SSL key.
+APP_PORT=80                            # Port for unsecured HTTP requests.
 APP_SESSION_SECRET=secret              # Any string. Used to encrypt session cookies.
 APP_LOG=false                          # Log will attempt to write to any path other than "false".
+
+SSL=false                              # "true" enables SSL-secured HTTPS server. 
+SSL_PORT=443                           # Port for SSL requests.
+SSL_CERTIFICATE=ssl/server.crt         # Path to SSL certificate file.
+SSL_KEY=ssl/server.key                 # Path to SSL key file.
+
+WS_PORT=443                            # Port for WebSocket requests.
 
 DB_HOST=localhost                      # Your MySQL/MariaDB host host. Defaults to "localhost".
 DB_PORT=3306                           # Your MySQL/MariaDB host port. Defaults to "3306".
