@@ -4,14 +4,14 @@ mix
 .options({
   processCssUrls: false,
 })
-.sass( 'sass/style.scss', 'public', {
+.sass( 'public/sass/style.scss', 'public/css', {
   sassOptions: {
       outputStyle: 'compressed',
   }
 })
 .combine([
 	'lib/socket/socket.io.min.js',
-	'client/portal.js',
+	'lib/portal/portal.js',
 	'client/client.js',
-], 'public/scripts.js' )
+], 'public/js/scripts.js' )
 .disableNotifications();
