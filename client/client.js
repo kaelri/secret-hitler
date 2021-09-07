@@ -79,25 +79,6 @@ new Vue({
 			this.view = viewID;
 		},
 
-		openSocket() {
-
-			if ( this.socket ) this.socket.disconnect();
-
-			this.socket = io( this.socketURL );
-
-			this.socket.on('dev-message', (message) => console.log( `[Dev Message] ${message}` ) );
-
-		},
-
-		closeSocket() {
-
-			if ( this.socket ) {
-				this.socket.disconnect();
-				this.socket = null;
-			}
-
-		},
-
 		setUser( user ) {
 
 			this.user = user;
@@ -140,6 +121,25 @@ new Vue({
 
 				},
 			});
+
+		},
+
+		openSocket() {
+
+			if ( this.socket ) this.socket.disconnect();
+
+			this.socket = io( this.socketURL );
+
+			this.socket.on('dev-message', (message) => console.log( `[Dev Message] ${message}` ) );
+
+		},
+
+		closeSocket() {
+
+			if ( this.socket ) {
+				this.socket.disconnect();
+				this.socket = null;
+			}
 
 		},
 
