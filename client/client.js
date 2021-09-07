@@ -9,14 +9,8 @@ new Vue({
 		user:      null,
 		game:      null,
 		socket:    null,
-		socketURL: secretHitlerData.socketURL,
-		view:      'home',
-
-		// REGISTER
-		registerName:     '',
-		registerPassword: '',
-		registerEmail:    '',
-		registerDisplay:  '',
+		socketURL: null,
+		view:      null,
 
 		// LOGIN
 		loginName:     '',
@@ -61,31 +55,17 @@ new Vue({
 			@setUser="setUser"
 		></sh-register>
 
-		
-
-		<section id="login" v-show="isView('login')">
-
-			<h2>Login</h2>
-
-			<div>
-				<label for="login-name">Username</label>
-				<input type="text" name="login-name" v-model="loginName">
-			</div>
-
-			<div>
-				<label for="login-password">Password</label>
-				<input type="password" name="password" v-model="loginPassword">
-			</div>
-
-			<button type="button" @click.prevent="login">Log in</button>
-
-		</section>
+		<sh-login
+			v-show="isView('login')"
+			@setView="setView"
+			@setUser="setUser"
+		></sh-login>
 
 	</article>`,
 
 	mounted() {
 
-		this.getUser();
+		this.getData();
 
 	},
 
@@ -101,7 +81,7 @@ new Vue({
 
 		openSocket() {
 
-			if ( this.socket ) return;
+			if ( this.socket ) this.socket.disconnect();
 
 			this.socket = io( this.socketURL );
 
@@ -118,65 +98,44 @@ new Vue({
 
 		},
 
-		getUser() {
+		setUser( user ) {
+
+			this.user = user;
+
+			if ( user ) this.openSocket();
+
+		},
+
+		setGame( game ) {
+			this.game = game;
+		},
+
+		getData() {
 
 			let self = this;
 
 			new Portal({
-				endpoint: '/rest/user/get',
+				endpoint: '/rest/client/get',
 				body: {},
 				callback( call ) {
 
 					switch ( call.status ) {
 						case 200:
+
+							self.socketURL = call.response.socketURL;
+
 							if ( call.response.loggedIn ) {
-								self.user = call.response.user;
-								self.openSocket();
+								self.setUser( call.response.user );
+								self.setView('home');
+							} else {
+								self.setView('login');
 							}
+
 							break;
+
 						default:
 							console.error( 'Something went wrong.', call );
-					}
-
-				},
-			});
-
-		},
-
-		register() {
-
-		},
-
-		login() {
-
-			let self = this;
-
-			new Portal({
-				endpoint: '/rest/user/login',
-				body: {
-					name:     this.loginName,
-					password: this.loginPassword,
-				},
-				callback( call ) {
-					
-					switch ( call.status ) {
-						case 200:
-
-							self.user = call.response.user;
-							self.openSocket();
-
-							self.loginName     = '';
-							self.loginPassword = '';
-
-							self.setView('home');
-
 							break;
-
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
 					}
 
 				},
@@ -197,7 +156,7 @@ new Vue({
 						case 200:
 							self.user = null;
 							self.closeSocket();
-							self.setView('home');
+							self.setView('login');
 							break;
 						case 400:
 							console.info(call.response.code);
@@ -209,18 +168,6 @@ new Vue({
 				},
 			});
 
-		},
-
-		setUser( user ) {
-
-			this.user = user;
-
-			if ( user ) this.openSocket();
-
-		},
-
-		setGame( game ) {
-			this.game = game;
 		},
 
 	},

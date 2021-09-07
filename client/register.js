@@ -16,7 +16,7 @@ Vue.component('shRegister', {
 
 		<form
 			id="register-form"
-			@submit.stop.prevent="submit">
+			@submit.prevent="submit">
 
 			<div>
 				<label for="register-name">Username</label>
@@ -38,7 +38,7 @@ Vue.component('shRegister', {
 				<input type="text" name="display" v-model="display">
 			</div>
 
-			<button type="button" @click.prevent="submit">Register</button>
+			<button type="submit" @click.prevent="submit">Register</button>
 
 		</form>
 

@@ -7,14 +7,23 @@ const Socket  = require('../modules/socket');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
 
-	vueData = {
-		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`
-	}
-
 	res.render('index', {
 		title:   'Secret Hitler',
 		vueURL:  ( process.env.NODE_ENV == 'development' ) ? '//cdn.jsdelivr.net/npm/vue/dist/vue.js' : '//cdn.jsdelivr.net/npm/vue',
-		vueData: vueData,
+	});
+
+});
+
+// CLIENT
+
+router.post('/rest/client/get', async function getUser( req, res, next ) {
+
+	const user = await User.getCurrent( req );
+
+	return res.status(200).send({
+		loggedIn:  ( user !== null ),
+		user:      user ? user.export() : null,
+		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`
 	});
 
 });
@@ -129,18 +138,6 @@ router.post('/rest/user/logout', async function logout(req, res, next) {
 
 	req.session.destroy(function(){
 		res.status(200).send({});
-	});
-
-});
-
-router.post('/rest/user/get', async function getUser( req, res, next ) {
-
-	// Get user.
-	const user = await User.getCurrent( req );
-
-	return res.status(200).send({
-		loggedIn: ( user !== null ),
-		user:     user ? user.export() : null,
 	});
 
 });

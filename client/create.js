@@ -20,7 +20,7 @@ Vue.component('shCreate', {
 				<input type="text" name="create-name" v-model="name">
 			</div>
 
-			<button type="button" @click.prevent="submit">Create game</button>
+			<button type="submit" @click.prevent="submit">Create game</button>
 
 		</form>
 
