@@ -7,11 +7,9 @@ Vue.component('shHome', {
 	computed: {},
 
 	/*html*/
-	template: `<section id="home">
+	template: `<section id="home" class="panel-narrow">
 
 		<h2>Games</h2>
-
-		<a href @click.prevent="setView('create')">New Game</a>
 
 	</section>`,
 

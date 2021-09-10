@@ -23,6 +23,7 @@ router.post('/rest/client/get', async function getUser( req, res, next ) {
 	return res.status(200).send({
 		loggedIn:  ( user !== null ),
 		user:      user ? user.export() : null,
+		appURL:    process.env.APP_URL,
 		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`
 	});
 
@@ -194,5 +195,11 @@ router.post('/rest/dev/message', async function newGame( req, res, next ) {
 	return res.status(200).send();
 
 });
+
+async function sleep(ms) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
 
 module.exports = router;

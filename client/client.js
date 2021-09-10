@@ -6,6 +6,7 @@ new Vue({
 
 	data: {
 
+		appURL:    null,
 		user:      null,
 		game:      null,
 		socket:    null,
@@ -29,12 +30,30 @@ new Vue({
 	/*html*/
 	template: `<article id="secret-hitler">
 
-		<header>
+		<header class="header">
 
-			<h2>User</h2>
+			<div class="header-pre">&nbsp;</div>
 
-			<p v-if="!loggedIn"><a href @click.prevent="setView('login')">Log in</a> • <a href @click.prevent="setView('register')">Register</a></p>
-			<p v-if="loggedIn"><span :title="user.name">{{ user.display }}</span> • <a href @click.prevent="logout">Log out</a></p>
+			<div class="header-title">
+				<h1><a :href="appURL" @click.prevent="setViewHome">Secret Hitler</a></h1>
+			</div>
+
+			<nav class="header-nav">
+
+				<ul v-if="!loggedIn">
+					<li :class="getMenuItemClass('login')"><a href @click.prevent="setView('login')">Log in</a></li>
+					<li :class="getMenuItemClass('register')"><a href @click.prevent="setView('register')">Register</a></li>
+				</ul>
+
+				<ul v-if="loggedIn">
+					<li :class="getMenuItemClass('settings')" :title="user.name"><a href @click.prevent="setView('settings')">{{ user.display }}</a></li>
+					<li :class="getMenuItemClass('home')"><a href @click.prevent="setView('home')">Games</a></li>
+					<li :class="getMenuItemClass('create')"><a href @click.prevent="setView('create')">New</a></li>
+					<li :class="getMenuItemClass('join')"><a href @click.prevent="setView('join')">Join</a></li>
+					<li><a href @click.prevent="logout">Log out</a></li>
+				</ul>
+
+			</nav>
 
 		</header>
 
@@ -61,6 +80,8 @@ new Vue({
 			@setUser="setUser"
 		></sh-login>
 
+		<div id="portal-spinner"><i class="fas fa-cog fa-spin"></i></div>
+
 	</article>`,
 
 	mounted() {
@@ -77,6 +98,10 @@ new Vue({
 
 		setView( viewID ) {
 			this.view = viewID;
+		},
+
+		setViewHome() {
+			this.setView( this.loggedIn ? 'home' : 'login' );
 		},
 
 		setUser( user ) {
@@ -103,6 +128,7 @@ new Vue({
 					switch ( call.status ) {
 						case 200:
 
+							self.appURL    = call.response.appURL;
 							self.socketURL = call.response.socketURL;
 
 							if ( call.response.loggedIn ) {
@@ -168,6 +194,10 @@ new Vue({
 				},
 			});
 
+		},
+
+		getMenuItemClass( viewID ) {
+			return ( this.view == viewID ) ? 'current' : '';
 		},
 
 	},

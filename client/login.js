@@ -44,6 +44,7 @@ Vue.component('shLogin', {
 					name:     this.name,
 					password: this.password,
 				},
+				silent: false,
 				callback( call ) {
 
 					switch ( call.status ) {
