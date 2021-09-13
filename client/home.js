@@ -7,9 +7,9 @@ Vue.component('shHome', {
 	computed: {},
 
 	/*html*/
-	template: `<section id="home" class="panel-narrow">
+	template: `<section id="home" class="panel">
 
-		<h2>Games</h2>
+		<h2 class="main-title">Games</h2>
 
 	</section>`,
 

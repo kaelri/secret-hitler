@@ -9,18 +9,21 @@ Vue.component('shCreate', {
 	/*html*/
 	template: `<section id="create">
 
-		<h2>New Game</h2>
+		<h2 class="main-title">New Game</h2>
 
 		<form
 			id="create-form"
+			class="form"
 			@submit.stop.prevent="submit">
 
-			<div>
-				<label for="create-name">Game Name (optional)</label>
-				<input type="text" name="create-name" v-model="name">
+			<div class="form-row">
+				<div class="form-label"><label for="create-name">Game Name (optional)</label></div>
+				<div class="form-input"><input type="text" name="create-name" v-model="name"></div>
 			</div>
 
-			<button type="submit" @click.prevent="submit">Create game</button>
+			<div class="form-buttons">
+				<button type="submit" @click.prevent="submit">Create game</button>
+			</div>
 
 		</form>
 

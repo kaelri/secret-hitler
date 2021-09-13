@@ -8,25 +8,28 @@ Vue.component('shLogin', {
 	computed: {},
 
 	/*html*/
-	template: `<section id="login">
+	template: `<section id="login" class="panel">
 
-		<h2>Login</h2>
+		<h2 class="main-title">Login</h2>
 
 		<form
 			id="login-form"
+			class="form"
 			@submit.prevent="submit">
 
-			<div>
-				<label for="login-name">Username</label>
-				<input type="text" name="login-name" v-model="name">
+			<div class="form-row">
+				<div class="form-label"><label for="login-name">Username</label></div>
+				<div class="form-input"><input type="text" name="login-name" v-model="name"></div>
 			</div>
 
-			<div>
-				<label for="login-password">Password</label>
-				<input type="password" name="password" v-model="password">
+			<div class="form-row">
+				<div class="form-label"><label for="login-password">Password</label></div>
+				<div class="form-input"><input type="password" name="password" v-model="password"></div>
 			</div>
 
-			<button type="submit" @click.prevent="submit">Log in</button>
+			<div class="form-buttons">
+				<button type="submit" @click.prevent="submit">Log in</button>
+			</div>
 
 		</form>
 

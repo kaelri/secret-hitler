@@ -1,4 +1,5 @@
 // LIBRARIES
+@use "sass:math";
 
 @import 'lib/helpers';
 @import 'lib/normalize';
@@ -35,10 +36,10 @@ $ranges: map-merge($ranges, $theme-ranges);
 	--highlight-light-blue:  #80C0FF;
 	--highlight-dark-blue:   #{desaturate( darken( #80C0FF, 18% ), 66% )};
 
-	--sh-black:  rgb(67, 67, 67);
-	--sh-orange: rgb(251, 185, 105);
-	--sh-red:    #f2654b;
-	--sh-white:  #fde1c0;
+	--sh-black:              rgb(67, 67, 67);
+	--sh-orange:             rgb(251, 185, 105);
+	--sh-red:                #f2654b;
+	--sh-white:              #fde1c0;
 
 	// STYLES
 	--link-color:            var(--sh-black);
@@ -57,9 +58,14 @@ body {
 }
 
 body {
-	padding: 1em;
 	background: var(--sh-orange);
 	color: var(--sh-black);
+	@include range(mobile) {
+		padding: 7em 0 4em;
+	}
+	@include range(desktop) {
+		padding: 5em 0 3em;
+	}
 }
 
 a {
@@ -67,6 +73,33 @@ a {
 	&:hover{ color: var(--link-color-hover) };
 	text-decoration: var(--link-text-decoration);
 	transition: color .3s;
+}
+
+h2,
+h3 {
+	text-align: center;
+	text-transform: uppercase;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"] {
+	width: 100%;
+	border: none;
+}
+
+button {
+	padding: .25em 1em;
+	background: var(--sh-red);
+	border: none;
+	color: white;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+.center {
+	text-align: center;
 }
 
 // HEADER
@@ -97,7 +130,7 @@ a {
 
 .header-title {
 	@include range(mobile) {
-		margin: 0 0 em;
+		margin: 0 0 1em;
 	}
 	@include range(desktop) {
 		flex: 0;
@@ -137,23 +170,83 @@ a {
 	li {
 		&:not(:first-child) {
 			margin-left: 1em;
-			/*&::before {
-				content: "•";
-				display: inline;
-				margin: 0 .5em;
-				color: var(--sh-red);
-			}*/
-		}
-		&.current {
-			--link-text-decoration: underline;
 		}
 	}
+}
 
-	a {
+.nav-icon {
+	opacity: .5;
+}
+
+.nav-text {
+	li.current & {
+		text-decoration: underline;
 		text-decoration-color: var(--sh-red);
 		text-decoration-thickness: 3px;
 	}
+}
 
+// MAIN
+
+.main {
+	position: relative;
+}
+
+.main-title {
+	margin: 0 0 1em;
+}
+
+.form {
+	margin: auto;
+	width: 100%;
+	max-width: 20em;
+}
+
+.form-row {
+	display: flex;
+	align-items: flex-start;
+	margin: 1em 0;
+}
+
+.form-label {
+	flex: 0 0 9em;
+	padding-top: .2em;
+	text-transform: uppercase;
+	font-weight: bold;
+	line-height: 1;
+}
+
+.form-input {
+	flex: 1;
+	line-height: 1;
+
+}
+
+.form-buttons {
+	margin: 1em 0;
+	padding-left: 9em;
+}
+
+// FOOTER
+
+.footer {
+	position: absolute;
+	bottom: 0; right: 0; left: 0;
+	padding: 1em;
+	--link-text-decoration: none;
+	a { color: inherit; }
+	white-space: nowrap;
+	font-size: math.div(12,16)+rem;
+}
+
+.footer-nav {
+	@extend .header-nav;
+
+	ul {
+		@include range(desktop) {
+			justify-content: center;
+		}
+	}
 }
 
 // PORTAL

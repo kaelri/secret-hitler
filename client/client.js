@@ -41,44 +41,105 @@ new Vue({
 			<nav class="header-nav">
 
 				<ul v-if="!loggedIn">
-					<li :class="getMenuItemClass('login')"><a href @click.prevent="setView('login')">Log in</a></li>
-					<li :class="getMenuItemClass('register')"><a href @click.prevent="setView('register')">Register</a></li>
+
+					<li :class="getMenuItemClass('login')">
+						<a href @click.prevent="setView('login')">
+							<span class="nav-text">Login</span>
+						</a>
+					</li>
+
+					<li :class="getMenuItemClass('register')">
+						<a href @click.prevent="setView('register')">
+							<span class="nav-text">Register</span>
+						</a>
+					</li>
+
 				</ul>
 
 				<ul v-if="loggedIn">
-					<li :class="getMenuItemClass('settings')" :title="user.name"><a href @click.prevent="setView('settings')">{{ user.display }}</a></li>
-					<li :class="getMenuItemClass('home')"><a href @click.prevent="setView('home')">Games</a></li>
-					<li :class="getMenuItemClass('create')"><a href @click.prevent="setView('create')">New</a></li>
-					<li :class="getMenuItemClass('join')"><a href @click.prevent="setView('join')">Join</a></li>
-					<li><a href @click.prevent="logout">Log out</a></li>
+
+					<li :class="getMenuItemClass('settings')" :title="user.name">
+						<a href @click.prevent="setView('settings')">
+							<span class="nav-icon"><i class="fas fa-user"></i></span>
+							<span class="nav-text">{{ user.display }}</span>
+						</a>
+					</li>
+
+					<li :class="getMenuItemClass('home')">
+						<a href @click.prevent="setView('home')">
+							<span class="nav-text">Games</span>
+						</a>
+					</li>
+
+					<li>
+						<a href @click.prevent="logout">
+							<span class="nav-text">Log out</span>
+						</a>
+					</li>
+
 				</ul>
 
 			</nav>
 
 		</header>
 
-		<sh-home
-			v-show="isView('home')"
-			@setView="setView"
-		></sh-home>
+		<main class="main">
 
-		<sh-create
-			v-show="isView('create')"
-			@setView="setView"
-			@setGame="setGame"
-		></sh-create>
+			<sh-home
+				v-show="isView('home')"
+				@setView="setView"
+			></sh-home>
 
-		<sh-register
-			v-show="isView('register')"
-			@setView="setView"
-			@setUser="setUser"
-		></sh-register>
+			<sh-create
+				v-show="isView('create')"
+				@setView="setView"
+				@setGame="setGame"
+			></sh-create>
 
-		<sh-login
-			v-show="isView('login')"
-			@setView="setView"
-			@setUser="setUser"
-		></sh-login>
+			<sh-register
+				v-show="isView('register')"
+				@setView="setView"
+				@setUser="setUser"
+			></sh-register>
+
+			<sh-login
+				v-show="isView('login')"
+				@setView="setView"
+				@setUser="setUser"
+			></sh-login>
+
+		</main>
+
+		<footer class="footer">
+
+			<nav class="footer-nav">
+
+				<ul>
+					<li>
+						<a href="https://www.secrethitler.com/" target="_blank">
+							<span class="nav-icon"><i class="far fa-copyright"></i></span>
+							<span class="nav-text">Goat, Wolf, & Cabbage</span>
+						</a>
+					</li>
+					<li>
+						<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+							<span class="nav-icon"><i class="fab fa-creative-commons"></i></span>
+							<span class="nav-text">CC SA–BY–NC 4.0</span>
+						</a>
+					</li>
+					<li>
+						<a href="https://github.com/kaelri/secret-hitler/" target="_blank">
+							<span class="nav-icon"><i class="fab fa-github"></i></span>
+							<span class="nav-text">GitHub</span>
+						</a>
+					</li>
+				</ul>
+
+			</nav>
+
+		</footer>
+
+	</nav>
 
 		<div id="portal-spinner"><i class="fas fa-cog fa-spin"></i></div>
 
