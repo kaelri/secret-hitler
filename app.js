@@ -95,7 +95,6 @@ if ( usingPassenger ) {
 		autoInstall: false
 	});
 
-	// port   = 8080;
 	port   = 'passenger';
 	server = app.listen( port );
 
