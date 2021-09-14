@@ -1,5 +1,6 @@
 const crypto   = require('crypto');
 const Database = require('./database');
+const Game     = require('./game');
 
 module.exports = class User {
 
@@ -13,6 +14,7 @@ module.exports = class User {
 		this.salt    = data.salt;
 		this.hash    = data.hash;
 		this.created = data.created;
+		this.games   = {};
 	}
 
 	validatePassword( password ) {
@@ -25,13 +27,50 @@ module.exports = class User {
 
 	}
 
+	async fetchGames() {
+
+		const games = {}
+
+		const gameIDs = await Database.getGameIDsByUser( this.id );
+
+		for (let i = 0; i < gameIDs.length; i++) {
+			const gameID = gameIDs[i];
+
+			const data = await Database.getGameBy( 'id', gameID );
+
+			const game = new Game(data);
+
+			games[ game.code ] = game;
+			
+		}
+
+		this.games = games;
+
+		return games;
+
+	}
+
 	export() {
-		return {
+
+		const data = {
 			id:      this.id,
 			name:    this.name,
 			email:   this.email,
 			display: this.display,
+			created: this.created,
+			games:   {},
 		}
+
+		for (let i = 0; i < Object.keys(this.games).length; i++) {
+			const gameCode = Object.keys(this.games)[i];
+			const game     = this.games[ gameCode ];
+
+			data.games[ gameCode ] = game.export();
+
+		}
+
+		return data;
+
 	}
 
 	static async create( input ) {

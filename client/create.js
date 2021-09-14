@@ -7,7 +7,7 @@ Vue.component('shCreate', {
 	computed: {},
 
 	/*html*/
-	template: `<section id="create">
+	template: `<section id="create" class="panel">
 
 		<h2 class="main-title">New Game</h2>
 

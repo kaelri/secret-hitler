@@ -165,6 +165,35 @@ module.exports = class Database {
 
 	}
 
+	static getGameIDsByUser( userID ) {
+
+		const connection = this.getConnection();
+
+		return new Promise((resolve, reject) => {
+
+			connection.query(`SELECT * FROM players WHERE user_id = ?`, userID, function (error, results, fields) {
+
+				connection.end();
+
+				if (error) return reject(error);
+
+				let gameIDs = [];
+
+				for (let i = 0; i < results.length; i++) {
+					const player = results[i];
+
+					gameIDs.push( player.game_id );
+					
+				}
+
+				return resolve( gameIDs );
+
+			});
+
+		});
+
+	}
+
 	static gameExists( code ) {
 
 		const connection = this.getConnection();

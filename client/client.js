@@ -6,12 +6,12 @@ new Vue({
 
 	data: {
 
-		appURL:    null,
+		appURL:    '',
 		user:      null,
 		game:      null,
 		socket:    null,
-		socketURL: null,
-		view:      null,
+		socketURL: '',
+		view:      '',
 
 		// LOGIN
 		loginName:     '',
@@ -87,6 +87,7 @@ new Vue({
 
 			<sh-home
 				v-show="isView('home')"
+				:user="user"
 				@setView="setView"
 			></sh-home>
 
@@ -192,7 +193,7 @@ new Vue({
 							self.appURL    = call.response.appURL;
 							self.socketURL = call.response.socketURL;
 
-							if ( call.response.loggedIn ) {
+							if ( call.response.user ) {
 								self.setUser( call.response.user );
 								self.setView('home');
 							} else {

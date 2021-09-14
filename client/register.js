@@ -10,7 +10,7 @@ Vue.component('shRegister', {
 	computed: {},
 
 	/*html*/
-	template: `<section id="register">
+	template: `<section id="register" class="panel">
 
 		<h2 class="main-title">Register</h2>
 

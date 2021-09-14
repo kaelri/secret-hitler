@@ -20,12 +20,17 @@ router.post('/rest/client/get', async function getUser( req, res, next ) {
 
 	const user = await User.getCurrent( req );
 
-	return res.status(200).send({
-		loggedIn:  ( user !== null ),
-		user:      user ? user.export() : null,
+	if ( user ) {
+		await user.fetchGames();
+	}
+
+	const data = {
 		appURL:    process.env.APP_URL,
-		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`
-	});
+		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`,
+		user:      user ? user.export() : null,
+	};
+
+	return res.status(200).send(data);
 
 });
 
@@ -73,6 +78,9 @@ router.post('/rest/user/new', async function register(req, res, next) {
 		});
 
 	}
+
+	// Fetch user’s active games.
+	await user.fetchGames();
 
 	// Finish.
 	req.session.userID = user.id;
@@ -125,6 +133,9 @@ router.post('/rest/user/login', async function login(req, res, next) {
 		});
 
 	}
+
+	// Fetch user’s active games.
+	await user.fetchGames();
 
 	// Finish.
 	req.session.userID = user.id;

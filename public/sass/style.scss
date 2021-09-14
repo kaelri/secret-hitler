@@ -54,17 +54,18 @@ $ranges: map-merge($ranges, $theme-ranges);
 
 html,
 body {
-	font: 16px/2 var(--primary-font);
+	font: 16px/1 var(--primary-font);
 }
 
 body {
 	background: var(--sh-orange);
 	color: var(--sh-black);
+	min-height: 100vh;
 	@include range(mobile) {
-		padding: 7em 0 4em;
+		padding: 7em 1em 4em;
 	}
 	@include range(desktop) {
-		padding: 5em 0 3em;
+		padding: 5em 2em 3em;
 	}
 }
 
@@ -90,7 +91,9 @@ input[type="email"] {
 }
 
 button {
-	padding: .25em 1em;
+	display: block;
+	width: 100%;
+	padding: .75em 1.5em;
 	background: var(--sh-red);
 	border: none;
 	color: white;
@@ -196,10 +199,57 @@ button {
 	margin: 0 0 1em;
 }
 
-.form {
+// COMPONENTS
+
+.panel {
 	margin: auto;
 	width: 100%;
 	max-width: 20em;
+}
+
+.cards {
+	@include no-list-style;
+
+	li {
+		display: flex;
+		margin: 1em 0;
+		padding: 1em;
+		cursor: pointer;
+		color: var(--sh-white);
+		background: var(--sh-black);
+		&:hover {
+			background: var(--sh-red);
+		}
+		transition: background-color .2s;
+	}
+}
+
+.card-code {
+	flex: 0 0 5.5em;
+	text-transform: uppercase;
+	font-weight: bold;
+	line-height: 1;
+}
+
+.card-name {
+	flex: 1;
+}
+
+.buttons {
+	@include no-list-style;
+	display: flex;
+	margin: -.5em;
+	@include range(mobile) {
+		flex-direction: column;
+	}
+
+	li {
+		flex: 1 1 0;
+		margin: .5em;
+	}
+}
+
+.form {
 }
 
 .form-row {
@@ -219,7 +269,6 @@ button {
 .form-input {
 	flex: 1;
 	line-height: 1;
-
 }
 
 .form-buttons {
