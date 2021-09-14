@@ -8,7 +8,7 @@ This is a playable web implementation of the _[Secret Hitler](https://www.secret
 
 - [Express.js](https://expressjs.com/)
 - [Vue.js](https://vuejs.org/)
-- [Axios](https://github.com/axios/axios)
+- [Axios](https://axios-http.com/)
 - [Socket.io](https://socket.io/)
 - [Day.js](https://day.js.org/)
 
