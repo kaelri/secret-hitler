@@ -6,7 +6,7 @@ This is a playable web implementation of the _[Secret Hitler](https://www.secret
 
 ## License
 
-Secret Hitler is licensed under [Creative Commons BY–NC–SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). That means you have to give credit for the original, you’re not allowed to profit from it commercially in any way, and you have to license it under the exact same CC license. You also can’t submit anything to an app store or anything like that.
+Secret Hitler is licensed under [Creative Commons BY–NC–SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). That means you have to give credit for [the original](https://www.secrethitler.com/), you’re not allowed to profit from it commercially in any way, and you have to license it under the exact same CC license. You also can’t submit anything to an app store or anything like that.
 
 ## Setup
 
