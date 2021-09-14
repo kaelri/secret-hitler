@@ -27,6 +27,7 @@ APP_URL=http://www.secrethitler.local  # Your server URL.
 APP_PORT=80                            # Port for unsecured HTTP requests.
 APP_SESSION_SECRET=secret              # Any string. Used to encrypt session cookies.
 APP_LOG=false                          # Log will attempt to write to any path other than "false".
+APP_LOCAL_LIB=false                    # Toggles whether third-party libraries (Vue, Google Fonts, etc.) are served locally or from public CDNs.
 
 SSL=false                              # "true" enables SSL-secured HTTPS server. 
 SSL_PORT=443                           # Port for SSL requests.
