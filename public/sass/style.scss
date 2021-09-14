@@ -60,6 +60,7 @@ body {
 body {
 	background: var(--sh-orange);
 	color: var(--sh-black);
+	min-width: 16em;
 	min-height: 100vh;
 	@include range(mobile) {
 		padding: 7em 1em 4em;
@@ -88,12 +89,13 @@ input[type="password"],
 input[type="email"] {
 	width: 100%;
 	border: none;
+	padding: .5em;
 }
 
 button {
 	display: block;
 	width: 100%;
-	padding: .75em 1.5em;
+	padding: 1em;
 	background: var(--sh-red);
 	border: none;
 	color: white;
@@ -145,7 +147,6 @@ button {
 		margin: 0;
 		text-align: center;
 		font-size: 2.5em;
-		line-height: 1;
 	}
 }
 
@@ -204,7 +205,7 @@ button {
 .panel {
 	margin: auto;
 	width: 100%;
-	max-width: 20em;
+	max-width: 26em;
 }
 
 .cards {
@@ -228,7 +229,6 @@ button {
 	flex: 0 0 5.5em;
 	text-transform: uppercase;
 	font-weight: bold;
-	line-height: 1;
 }
 
 .card-name {
@@ -253,27 +253,36 @@ button {
 }
 
 .form-row {
-	display: flex;
-	align-items: flex-start;
 	margin: 1em 0;
+	@include range(desktop) {
+		display: flex;
+		align-items: center;
+	}
 }
 
 .form-label {
-	flex: 0 0 9em;
-	padding-top: .2em;
 	text-transform: uppercase;
 	font-weight: bold;
-	line-height: 1;
+	@include range(mobile) {
+		padding-bottom: .5em;
+	}
+	@include range(desktop) {
+		flex: 0 0 9em;
+		padding-right: .5em;
+	}
 }
 
 .form-input {
-	flex: 1;
-	line-height: 1;
+	@include range(desktop) {
+		flex: 1;
+	}
 }
 
 .form-buttons {
 	margin: 1em 0;
-	padding-left: 9em;
+	@include range(desktop) {
+		padding-left: 9em;
+	}
 }
 
 // FOOTER
@@ -298,9 +307,7 @@ button {
 	}
 }
 
-// PORTAL
-
-#portal-spinner {
+.loading {
 	position: fixed;
 	opacity: 0;
 	z-index: 200;
@@ -310,21 +317,15 @@ button {
 	left: 0;
 	background: rgba(0,0,0,0.6);
 	color: white;
-	display: -webkit-flex;
 	display: flex;
-	-webkit-justify-content: center;
 	justify-content: center;
-	-webkit-align-items: center;
 	align-items: center;
 	pointer-events: none;
 	font-size: 6rem;
-	-moz-transition: opacity .2s;
-	-o-transition: opacity .2s;
-	-webkit-transition: opacity .2s;
 	transition: opacity .2s;
-}
 
-body.portal-is-loading #portal-spinner {
-	opacity: 1;
-	pointer-events: auto;
+	&.show {
+		opacity: 1;
+		pointer-events: auto;
+	}
 }

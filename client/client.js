@@ -7,15 +7,18 @@ new Vue({
 	data: {
 
 		appURL:    '',
-		user:      null,
-		game:      null,
 		socket:    null,
 		socketURL: '',
-		view:      '',
+		user:      null,
+		game:      null,
 
 		// LOGIN
 		loginName:     '',
 		loginPassword: '',
+
+		// VIEW
+		view:      '',
+		isLoading: false,
 
 	},
 
@@ -95,18 +98,24 @@ new Vue({
 				v-show="isView('create')"
 				@setView="setView"
 				@setGame="setGame"
+				@showLoading="showLoading"
+				@hideLoading="hideLoading"
 			></sh-create>
 
 			<sh-register
 				v-show="isView('register')"
 				@setView="setView"
 				@setUser="setUser"
+				@showLoading="showLoading"
+				@hideLoading="hideLoading"
 			></sh-register>
 
 			<sh-login
 				v-show="isView('login')"
 				@setView="setView"
 				@setUser="setUser"
+				@showLoading="showLoading"
+				@hideLoading="hideLoading"
 			></sh-login>
 
 		</main>
@@ -140,9 +149,7 @@ new Vue({
 
 		</footer>
 
-	</nav>
-
-		<div id="portal-spinner"><i class="fas fa-cog fa-spin"></i></div>
+		<div id="loading" :class="{ loading: true, show: isLoading }"><i class="fas fa-cog fa-spin"></i></div>
 
 	</article>`,
 
@@ -166,6 +173,14 @@ new Vue({
 			this.setView( this.loggedIn ? 'home' : 'login' );
 		},
 
+		showLoading() {
+			this.isLoading = true;
+		},
+
+		hideLoading() {
+			this.isLoading = false;
+		},
+
 		setUser( user ) {
 
 			this.user = user;
@@ -180,35 +195,31 @@ new Vue({
 
 		getData() {
 
-			let self = this;
+			this.showLoading();
 
-			new Portal({
-				endpoint: '/rest/client/get',
-				body: {},
-				callback( call ) {
+			axios.post('/rest/client/get')
+			.then((response) => {
+				switch ( response.data.code ) {
+					case 'success':
 
-					switch ( call.status ) {
-						case 200:
-
-							self.appURL    = call.response.appURL;
-							self.socketURL = call.response.socketURL;
-
-							if ( call.response.user ) {
-								self.setUser( call.response.user );
-								self.setView('home');
-							} else {
-								self.setView('login');
-							}
-
-							break;
-
-						default:
-							console.error( 'Something went wrong.', call );
-							break;
-					}
-
-				},
-			});
+						this.appURL    = response.data.appURL;
+						this.socketURL = response.data.socketURL;
+		
+						if ( response.data.user ) {
+							this.setUser( response.data.user );
+							this.setView('home');
+						} else {
+							this.setView('login');
+						}
+		
+						break;
+					default:
+						throw new Error( `Unexpected response code: ${response.data.code}` );
+						break;
+				}
+			})
+			.catch((error) => { console.error( 'Something went wrong.', error ) })
+			.then(() => { this.hideLoading() });
 
 		},
 
@@ -233,28 +244,23 @@ new Vue({
 
 		logout() {
 
-			let self = this;
+			this.showLoading();
 
-			new Portal({
-				endpoint: '/rest/user/logout',
-				body: {},
-				callback( call ) {
-					
-					switch ( call.status ) {
-						case 200:
-							self.user = null;
-							self.closeSocket();
-							self.setView('login');
-							break;
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
-					}
-
-				},
-			});
+			axios.post('/rest/user/logout')
+			.then((response) => {
+				switch ( response.data.code ) {
+					case 'success':
+						this.user = null;
+						this.closeSocket();
+						this.setView('login');
+						break;
+					default:
+						throw new Error( `Unexpected response code: ${response.data.code}` );
+						break;
+				}
+			})
+			.catch((error) => { console.error( 'Something went wrong.', error ) })
+			.then(() => { this.hideLoading() });
 
 		},
 

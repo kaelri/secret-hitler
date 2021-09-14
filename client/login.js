@@ -39,38 +39,34 @@ Vue.component('shLogin', {
 
 		submit() {
 
-			let self = this;
+			this.$emit('showLoading');
 
-			new Portal({
-				endpoint: '/rest/user/login',
-				body: {
-					name:     this.name,
-					password: this.password,
-				},
-				silent: false,
-				callback( call ) {
+			axios.post('/rest/user/login', {
+				name:     this.name,
+				password: this.password,
+			})
+			.then((response) => {
+				switch ( response.data.code ) {
+					case 'success':
 
-					switch ( call.status ) {
-						case 200:
+						this.$emit( 'setUser', response.data.user );
 
-							self.$emit( 'setUser', call.response.user );
-							
-							self.name     = '';
-							self.password = '';
+						this.name     = '';
+						this.password = '';
+		
+						this.$emit( 'setView', 'home' );
 
-							self.$emit( 'setView', 'home' );
-
-							break;
-
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
-					}
-
-				},
-			});
+						break;
+					case 'bad-credentials':
+						console.error('Your username or password is incorrect.');
+						break;
+					default:
+						throw new Error( `Unexpected response code: ${response.data.code}` );
+						break;
+				}
+			})
+			.catch((error) => { console.error( 'Something went wrong.', error ) })
+			.then(() => { this.$emit('hideLoading') });
 
 		},
 

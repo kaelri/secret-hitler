@@ -13,26 +13,30 @@ router.get('/', async function(req, res, next) {
 	let googleFontsURL;
 	let fontAwesomeURL;
 	let vueURL;
+	let axiosURL;
 	let socketURL;
 
 	if ( useLocalScripts ) {
 		googleFontsURL = '/lib/google-fonts/google-fonts.css';
 		vueURL         = useDevScripts ? '/lib/vue/vue.js' : '/lib/vue/vue.min.js';
+		axiosURL       = '/lib/axios/axios.min.js';
 		socketURL      = '/lib/socket-io/socket.io.min.js';
 		fontAwesomeURL = '/lib/font-awesome/all.min.js';
 	} else {
 		googleFontsURL = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Germania+One&display=swap';
-		vueURL         = useDevScripts ? '//cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js' : '//cdn.jsdelivr.net/npm/vue@2.6.14';
-		socketURL      = '//cdn.socket.io/4.1.2/socket.io.min.js';
-		fontAwesomeURL = '//use.fontawesome.com/releases/v5.15.2/js/all.js';
+		vueURL         = useDevScripts ? 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js' : 'https://cdn.jsdelivr.net/npm/vue@2.6.14';
+		axiosURL       = 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js';
+		socketURL      = 'https://cdn.socket.io/4.1.2/socket.io.min.js';
+		fontAwesomeURL = 'https://use.fontawesome.com/releases/v5.15.2/js/all.js';
 	}
 
 	res.render('index', {
 		title:          'Secret Hitler',
 		googleFontsURL: googleFontsURL,
-		fontAwesomeURL: fontAwesomeURL,
 		vueURL:         vueURL,
+		axiosURL:       axiosURL,
 		socketURL:      socketURL,
+		fontAwesomeURL: fontAwesomeURL,
 	});
 
 });
@@ -47,13 +51,13 @@ router.post('/rest/client/get', async function getUser( req, res, next ) {
 		await user.fetchGames();
 	}
 
-	const data = {
+	return res.status(200).send({
+		code:      'success',
 		appURL:    process.env.APP_URL,
 		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`,
+		loggedIn:  ( user !== null ),
 		user:      user ? user.export() : null,
-	};
-
-	return res.status(200).send(data);
+	});
 
 });
 
@@ -76,7 +80,7 @@ router.post('/rest/user/new', async function register(req, res, next) {
 
 		if ( userExists ) {
 
-			return res.status(400).send({
+			return res.status(200).send({
 				code:    'user-exists',
 				message: `A user is already registered with the name “${name}”.`
 			});
@@ -109,6 +113,7 @@ router.post('/rest/user/new', async function register(req, res, next) {
 	req.session.userID = user.id;
 
 	return res.status(200).send({
+		code: 'success',
 		user: user.export()
 	});
 
@@ -138,9 +143,8 @@ router.post('/rest/user/login', async function login(req, res, next) {
 
 	if ( !user ) {
 
-		return res.status(400).send({
-			code:    'bad-credentials',
-			message: 'The username or password is incorrect.'
+		return res.status(200).send({
+			code: 'bad-credentials'
 		});
 
 	}
@@ -150,9 +154,8 @@ router.post('/rest/user/login', async function login(req, res, next) {
 	
 	if ( !passwordValid ) {
 
-		return res.status(400).send({
-			code:    'bad-credentials',
-			message: 'The username or password is incorrect.'
+		return res.status(200).send({
+			code: 'bad-credentials'
 		});
 
 	}
@@ -164,6 +167,7 @@ router.post('/rest/user/login', async function login(req, res, next) {
 	req.session.userID = user.id;
 
 	return res.status(200).send({
+		code: 'success',
 		user: user.export()
 	});
 
@@ -172,7 +176,9 @@ router.post('/rest/user/login', async function login(req, res, next) {
 router.post('/rest/user/logout', async function logout(req, res, next) {
 
 	req.session.destroy(function(){
-		res.status(200).send({});
+		res.status(200).send({
+			code: 'success'
+		});
 	});
 
 });
@@ -186,9 +192,8 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 
 	if ( !user ) {
 
-		return res.status(400).send({
-			code:    'not-logged-in',
-			message: 'You must be logged in to create a new game.'
+		return res.status(200).send({
+			code: 'not-logged-in'
 		});
 
 	}
@@ -213,6 +218,7 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 	}
 
 	return res.status(200).send({
+		code: 'success',
 		game: game.export()
 	});
 
@@ -226,7 +232,9 @@ router.post('/rest/dev/message', async function newGame( req, res, next ) {
 
 	Socket.io.emit( 'dev-message', text );
 
-	return res.status(200).send();
+	return res.status(200).send({
+		code: 'success',
+	});
 
 });
 

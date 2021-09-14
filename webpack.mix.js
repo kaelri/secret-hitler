@@ -10,7 +10,6 @@ mix
   }
 })
 .combine([
-	'client/portal.js',
 	'client/home.js',
 	'client/register.js',
 	'client/login.js',

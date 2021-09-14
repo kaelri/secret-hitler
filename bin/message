@@ -8,10 +8,8 @@ async function sendMessage() {
 
 	let message = process.argv.slice(2).join("\n");
 
-	return await axios({
-		method: 'post',
-		url:    `${process.env.APP_URL}/rest/dev/message/`,
-		data:   { text: message },
+	return await axios.post(`${process.env.APP_URL}/rest/dev/message/`, {
+		text: message,
 	});
 
 }

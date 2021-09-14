@@ -51,41 +51,37 @@ Vue.component('shRegister', {
 
 		submit() {
 
-			let self = this;
+			this.$emit('showLoading');
 
-			new Portal({
-				endpoint: '/rest/user/new',
-				body: {
-					name:     this.name,
-					password: this.password,
-					email:    this.email,
-					display:  this.display,
-				},
-				callback( call ) {
+			axios.post('/rest/user/new', {
+				name:     this.name,
+				password: this.password,
+				email:    this.email,
+				display:  this.display,
+			})
+			.then((response) => {
+				switch ( response.data.code ) {
+					case 'success':
 
-					switch ( call.status ) {
-						case 200:
+						this.$emit( 'setUser', response.data.user );
 
-							self.$emit( 'setUser', call.response.user );
-							
-							self.name     = '';
-							self.password = '';
-							self.email    = '';
-							self.display  = '';
+						this.name     = '';
+						this.password = '';
+						this.email    = '';
+						this.display  = '';
 
-							self.$emit( 'setView', 'game' );
+						this.$emit( 'setView', 'game' );
 
-							break;
-
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
-					}
-
-				},
-			});
+						break;
+					case 'user-exists':
+						console.error('A user already exists with this name.');
+						break;
+					default:
+						throw new Error( `Unexpected response code: ${response.data.code}` );
+						break;
+				}
+			}).catch((error) => { console.error( 'Something went wrong.', error ); })
+			.then(() => { this.$emit('hideLoading') });
 
 		},
 

@@ -33,30 +33,26 @@ Vue.component('shCreate', {
 
 		submit() {
 
-			let self = this;
+			this.$emit('showLoading');
 
-			new Portal({
-				endpoint: '/rest/game/new',
-				body: {
-					name: this.name
-				},
-				callback( call ) {
+			axios.post('/rest/game/new', {
+				name: this.name
+			})
+			.then((response) => {
+				switch ( response.data.code ) {
+					case 'success':
 
-					switch ( call.status ) {
-						case 200:
-							self.$emit( 'setGame', call.response.game );
-							self.$emit( 'setView', 'game' );
-							self.name = '';
-							break;
-						case 400:
-							console.info(call.response.code);
-							break;
-						default:
-							console.error( 'Something went wrong.', call );
-					}
+						this.$emit( 'setGame', response.data.game );
+						this.$emit( 'setView', 'game' );
+						this.name = '';
 
-				},
-			});
+						break;
+					default:
+						throw new Error( `Unexpected response code: ${response.data.code}` );
+						break;
+				}
+			}).catch((error) => { console.error( 'Something went wrong.', error ); })
+			.then(() => { this.$emit('hideLoading') });
 
 		},
 
