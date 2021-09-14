@@ -10,8 +10,7 @@ mix
   }
 })
 .combine([
-	'lib/socket/socket.io.min.js',
-	'lib/portal/portal.js',
+	'client/portal.js',
 	'client/home.js',
 	'client/register.js',
 	'client/login.js',

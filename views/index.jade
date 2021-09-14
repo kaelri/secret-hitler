@@ -1,11 +1,12 @@
 doctype html
 html
   head
-    title= title
-    link#google-fonts(rel='stylesheet', href='https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Germania+One&display=swap')
+    title=title
+    link#google-fonts(rel='stylesheet', href=googleFontsURL)
     link#secret-hitler-css(rel='stylesheet', href='/css/style.css')
     script#vue(src=vueURL)
-    script#font-awesome-5(src='//use.fontawesome.com/releases/v5.15.2/js/all.js')
+    script#socket-io(src=socketURL)
+    script#font-awesome-5(src=fontAwesomeURL)
   body
     article#secret-hitler
     //- script.

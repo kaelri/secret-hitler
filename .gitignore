@@ -1,4 +1,9 @@
-/docs
-/ssl
+# Build files.
 /public/js
 /public/css
+
+# SSL certificates.
+/ssl
+
+# Reference files for development.
+/docs

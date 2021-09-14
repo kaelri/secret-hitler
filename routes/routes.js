@@ -7,9 +7,32 @@ const Socket  = require('../modules/socket');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
 
+	let useLocalScripts = ( process.env.APP_LOCAL_LIB && process.env.APP_LOCAL_LIB === 'true'        );
+	let useDevScripts   = ( process.env.NODE_ENV      && process.env.NODE_ENV      === 'development' );
+
+	let googleFontsURL;
+	let fontAwesomeURL;
+	let vueURL;
+	let socketURL;
+
+	if ( useLocalScripts ) {
+		googleFontsURL = '/lib/google-fonts/google-fonts.css';
+		vueURL         = useDevScripts ? '/lib/vue/vue.js' : '/lib/vue/vue.min.js';
+		socketURL      = '/lib/socket-io/socket.io.min.js';
+		fontAwesomeURL = '/lib/font-awesome/all.min.js';
+	} else {
+		googleFontsURL = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Germania+One&display=swap';
+		vueURL         = useDevScripts ? '//cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js' : '//cdn.jsdelivr.net/npm/vue@2.6.14';
+		socketURL      = '//cdn.socket.io/4.1.2/socket.io.min.js';
+		fontAwesomeURL = '//use.fontawesome.com/releases/v5.15.2/js/all.js';
+	}
+
 	res.render('index', {
-		title:   'Secret Hitler',
-		vueURL:  ( process.env.NODE_ENV == 'development' ) ? '//cdn.jsdelivr.net/npm/vue/dist/vue.js' : '//cdn.jsdelivr.net/npm/vue',
+		title:          'Secret Hitler',
+		googleFontsURL: googleFontsURL,
+		fontAwesomeURL: fontAwesomeURL,
+		vueURL:         vueURL,
+		socketURL:      socketURL,
 	});
 
 });
