@@ -16,7 +16,6 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "dayjs": "^1.10.6",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
