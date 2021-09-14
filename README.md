@@ -6,10 +6,10 @@ This is a playable web implementation of the _[Secret Hitler](https://www.secret
 
 ## Uses
 
-- [Express.js](https://expressjs.com/)
+- [Express](https://expressjs.com/)
 - [Vue.js](https://vuejs.org/)
 - [Axios](https://axios-http.com/)
-- [Socket.io](https://socket.io/)
+- [Socket.IO](https://socket.io/)
 - [Day.js](https://day.js.org/)
 
 ## License
