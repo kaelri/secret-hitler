@@ -18,7 +18,7 @@ Vue.component('shCreate', {
 
 			<div class="form-row">
 				<div class="form-label"><label for="create-name">Game Name (optional)</label></div>
-				<div class="form-input"><input type="text" name="create-name" v-model="name"></div>
+				<div class="form-input"><input type="text" name="create-name" v-model="name" placeholder="Secret Hitler"></div>
 			</div>
 
 			<div class="form-buttons">
@@ -42,6 +42,7 @@ Vue.component('shCreate', {
 				switch ( response.data.code ) {
 					case 'success':
 
+						this.$emit( 'setUser', response.data.user );
 						this.$emit( 'setGame', response.data.game );
 						this.$emit( 'setView', 'game' );
 						this.name = '';

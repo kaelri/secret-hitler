@@ -7,36 +7,16 @@ const Socket  = require('../modules/socket');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
 
-	let useLocalScripts = ( process.env.APP_LOCAL_LIB && process.env.APP_LOCAL_LIB === 'true'        );
-	let useDevScripts   = ( process.env.NODE_ENV      && process.env.NODE_ENV      === 'development' );
-
-	let googleFontsURL;
-	let fontAwesomeURL;
-	let vueURL;
-	let axiosURL;
-	let socketURL;
-
-	if ( useLocalScripts ) {
-		googleFontsURL = '/lib/google-fonts/google-fonts.css';
-		vueURL         = useDevScripts ? '/lib/vue/vue.js' : '/lib/vue/vue.min.js';
-		axiosURL       = '/lib/axios/axios.min.js';
-		socketURL      = '/lib/socket-io/socket.io.min.js';
-		fontAwesomeURL = '/lib/font-awesome/all.min.js';
-	} else {
-		googleFontsURL = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Germania+One&display=swap';
-		vueURL         = useDevScripts ? 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js' : 'https://cdn.jsdelivr.net/npm/vue@2.6.14';
-		axiosURL       = 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js';
-		socketURL      = 'https://cdn.socket.io/4.1.2/socket.io.min.js';
-		fontAwesomeURL = 'https://use.fontawesome.com/releases/v5.15.2/js/all.js';
-	}
+	const useLocalScripts = ( process.env.APP_LOCAL_LIB && process.env.APP_LOCAL_LIB === 'true'        );
+	const useDevScripts   = ( process.env.NODE_ENV      && process.env.NODE_ENV      === 'development' );
 
 	res.render('index', {
 		title:          'Secret Hitler',
-		googleFontsURL: googleFontsURL,
-		vueURL:         vueURL,
-		axiosURL:       axiosURL,
-		socketURL:      socketURL,
-		fontAwesomeURL: fontAwesomeURL,
+		vueURL:         useLocalScripts ? ( useDevScripts ? '/lib/vue/vue.js' : '/lib/vue/vue.min.js' ) : ( useDevScripts ? 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js' : 'https://cdn.jsdelivr.net/npm/vue@2.6.14' ),
+		googleFontsURL: useLocalScripts ? '/lib/google-fonts/google-fonts.css' : 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Germania+One&display=swap',
+		axiosURL:       useLocalScripts ? '/lib/axios/axios.min.js' : 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js',
+		socketURL:      useLocalScripts ? '/lib/socket-io/socket.io.min.js' : 'https://cdn.socket.io/4.1.2/socket.io.min.js',
+		fontAwesomeURL: useLocalScripts ? '/lib/font-awesome/all.min.js' : 'https://use.fontawesome.com/releases/v5.15.2/js/all.js',
 	});
 
 });
@@ -217,8 +197,11 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 
 	}
 
+	await user.fetchGames();
+
 	return res.status(200).send({
 		code: 'success',
+		user: user.export(),
 		game: game.export()
 	});
 

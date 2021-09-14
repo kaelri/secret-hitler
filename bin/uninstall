@@ -13,6 +13,6 @@ connection.query(sql, function (error, results, fields) {
   if (error) throw error;
 });
 
-console.log(`“${process.env.DB_NAME}” database uninstalled.`);
+console.info(`“${process.env.DB_NAME}” database uninstalled.`);
  
 connection.end();

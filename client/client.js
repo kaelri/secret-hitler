@@ -97,6 +97,7 @@ new Vue({
 			<sh-create
 				v-show="isView('create')"
 				@setView="setView"
+				@setUser="setUser"
 				@setGame="setGame"
 				@showLoading="showLoading"
 				@hideLoading="hideLoading"
