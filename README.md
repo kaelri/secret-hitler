@@ -40,6 +40,8 @@ If your host serves Node applications with [Phusion Passenger](https://www.phusi
 
 By default, the site will be available at [http://localhost:8080](http://localhost:8080).
 
+Run `npm run uninstall` to empty the database.
+
 ## Configuration
 
 ```ini
