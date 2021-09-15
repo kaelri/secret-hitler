@@ -10,7 +10,7 @@ module.exports = class User {
 		this.name    = data.name;
 		this.email   = data.email;
 		this.display = data.display;
-		this.roles   = data.roles.split(',');
+		this.roles   = data.roles;
 		this.salt    = data.salt;
 		this.hash    = data.hash;
 		this.created = data.created;
@@ -75,14 +75,18 @@ module.exports = class User {
 
 	static async create( input ) {
 
-		const salt = crypto.randomBytes(16).toString('hex'),
-			  hash = crypto.pbkdf2Sync( input.password, salt, 1000, 64, `sha512`).toString(`hex`);
+		const name    = input.name,
+		      email   = input.email,
+		      display = input.display,
+		      roles   = input.roles,
+		      salt    = crypto.randomBytes(16).toString('hex'),
+			  hash    = crypto.pbkdf2Sync( input.password, salt, 1000, 64, `sha512`).toString(`hex`);
 	
 		const id = await Database.createUser({
-			name:    input.name,
-			email:   input.email,
-			display: input.display,
-			roles:   input.roles.join(','),
+			name:    name,
+			email:   email,
+			display: display,
+			roles:   roles,
 			salt:    salt,
 			hash:    hash,
 		});

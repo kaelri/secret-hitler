@@ -8,52 +8,86 @@ module.exports = class Game {
 		this.name     = data.name;
 		this.status   = data.status;
 		this.content  = data.content;
-		this.owner    = data.owner;
 		this.created  = data.created;
 		this.modified = data.modified;
 	}
 
-	static async create( input ) {
+	async save() {
 
-		const code    = await this.generateCode(),
-		      content = {};
-
-		// Create game.
-		const id = await Database.createGame({
-			name:    input.name,
-			owner:   input.owner,
-			code:    code,
-			status:  'new',
-			content: JSON.stringify( content ),
-		});
-	
-		const data = await Database.getGameBy( 'id', id ),
-			  game = new this(data);
-	
-		// Create relationship between game and player.
-		const relationship = await Database.createPlayer({
-			game_id: game.id,
-			user_id: game.owner,
+		await Database.saveGame( this.id, {
+			name:    this.name,
+			status:  this.status,
+			content: this.content,
 		});
 
-		// Finish.
-		return game;
-	
-	};
+	}
+
+	async addPlayer( userID, tags = [] ) {
+
+		this.content.players[ userID ] = tags;
+
+		await Database.createPlayer({
+			gameID: this.id,
+			userID: userID,
+		});
+
+	}
 
 	export( userID = null ) {
 		return {
-			id:       this.id,
 			code:     this.code,
 			name:     this.name,
 			status:   this.status,
 			content:  this.content,
-			owner:    this.owner,
 			created:  this.created,
 			modified: this.modified,
 		}
 	}
 
+	static async create( input ) {
+
+		const name   = input.name,
+		      userID = input.userID,
+		      code   = await this.generateCode(),
+		      status = 'new';
+
+		const content = {
+			creator: userID,
+			players: {},
+		}
+
+		// Create game.
+		const id = await Database.createGame({
+			name:    name,
+			code:    code,
+			status:  status,
+			content: content,
+		});
+	
+		const data = await Database.getGameBy( 'id', id ),
+			  game = new this(data);
+		
+		// Add the current user as the first player and host.
+		await game.addPlayer( userID, [ 'host' ] );
+		await game.save();
+	
+		// Finish.
+		return game;
+	
+	};
+
+	static async get( key, value ) {
+	
+		let data = await Database.getGameBy( key, value );
+	
+		if ( !data ) return null;
+	
+		const game = new this(data);
+	
+		return game;
+	
+	}
+	
 	static async generateCode() {
 	
 		let code,

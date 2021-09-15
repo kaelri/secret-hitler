@@ -70,7 +70,7 @@ Vue.component('shRegister', {
 						this.email    = '';
 						this.display  = '';
 
-						this.$emit( 'setView', 'game' );
+						this.$emit( 'setView', 'home' );
 
 						break;
 					case 'user-exists':

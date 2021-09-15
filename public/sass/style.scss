@@ -216,7 +216,7 @@ button {
 		margin: 1em 0;
 		padding: 1em;
 		cursor: pointer;
-		color: var(--sh-white);
+		color: white;
 		background: var(--sh-black);
 		&:hover {
 			background: var(--sh-red);
@@ -233,6 +233,7 @@ button {
 
 .card-name {
 	flex: 1;
+	line-height: 1.1;
 }
 
 .buttons {

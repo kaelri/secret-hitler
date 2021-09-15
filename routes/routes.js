@@ -35,7 +35,6 @@ router.post('/rest/client/get', async function getUser( req, res, next ) {
 		code:      'success',
 		appURL:    process.env.APP_URL,
 		socketURL: `${process.env.APP_URL}:${process.env.WS_PORT}`,
-		loggedIn:  ( user !== null ),
 		user:      user ? user.export() : null,
 	});
 
@@ -85,9 +84,6 @@ router.post('/rest/user/new', async function register(req, res, next) {
 		});
 
 	}
-
-	// Fetch user’s active games.
-	await user.fetchGames();
 
 	// Finish.
 	req.session.userID = user.id;
@@ -172,7 +168,99 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 
 	if ( !user ) {
 
-		return res.status(200).send({
+		return res.status(400).send({
+			code: 'not-logged-in'
+		});
+
+	}
+
+	let game;
+
+	try {
+
+		game = await Game.create({
+			name:   name,
+			userID: user.id,
+		});
+
+	} catch (error) {
+
+		return res.status(500).send({
+			code:    'database-error',
+			message: error.message,
+			stack:   error.stack
+		});
+
+	}
+
+	// Fetch user’s active games.
+	await user.fetchGames();
+
+	return res.status(200).send({
+		code: 'success',
+		user: user.export(),
+		game: game.export()
+	});
+
+});
+
+router.post('/rest/game/join', async function newGame( req, res, next ) {
+
+	const code = String( req.body.code || '' ).trim(),
+		  user = await User.getCurrent( req );
+
+	if ( !user ) {
+
+		return res.status(400).send({
+			code: 'not-logged-in'
+		});
+
+	}
+
+	let game;
+
+	try {
+
+		game = await Game.get( 'code', code );
+		
+		if ( !game ) {
+
+			return res.status(200).send({
+				code: 'game-not-found'
+			});
+
+		}
+
+		game.addPlayer( user.id );
+
+	} catch (error) {
+
+		return res.status(500).send({
+			code:    'database-error',
+			message: error.message,
+			stack:   error.stack
+		});
+
+	}
+
+	await user.fetchGames();
+
+	return res.status(200).send({
+		code: 'success',
+		user: user.export(),
+		game: game.export()
+	});
+
+});
+
+router.post('/rest/game/play', async function newGame( req, res, next ) {
+
+	const name = String( req.body.name || '' ).trim(),
+		  user = await User.getCurrent( req );
+
+	if ( !user ) {
+
+		return res.status(400).send({
 			code: 'not-logged-in'
 		});
 

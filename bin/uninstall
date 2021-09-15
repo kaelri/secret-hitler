@@ -3,16 +3,4 @@
 const dotenv   = require('dotenv').config();
 const Database = require ('../modules/database');
 
-var connection = Database.getConnection();
- 
-connection.connect();
-
-let sql = 'DROP TABLE IF EXISTS `users`,`games`,`players`,`sessions`;';
-
-connection.query(sql, function (error, results, fields) {
-  if (error) throw error;
-});
-
-console.info(`“${process.env.DB_NAME}” database uninstalled.`);
- 
-connection.end();
+Database.uninstall();
