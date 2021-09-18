@@ -44,7 +44,7 @@ Vue.component('shCreate', {
 
 						this.$emit( 'setUser', response.data.user );
 						this.$emit( 'setGame', response.data.game );
-						this.$emit( 'setView', 'game' );
+						this.$emit( 'setView', 'play' );
 						this.name = '';
 
 						break;

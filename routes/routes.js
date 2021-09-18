@@ -179,9 +179,12 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 	try {
 
 		game = await Game.create({
-			name:   name,
-			userID: user.id,
+			name: name,
+			user: user,
 		});
+
+		// Fetch user’s active games.
+		await user.fetchGames();
 
 	} catch (error) {
 
@@ -192,9 +195,6 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 		});
 
 	}
-
-	// Fetch user’s active games.
-	await user.fetchGames();
 
 	return res.status(200).send({
 		code: 'success',
@@ -231,7 +231,9 @@ router.post('/rest/game/join', async function newGame( req, res, next ) {
 
 		}
 
-		game.addPlayer( user.id );
+		await game.addPlayer( user.id );
+
+		await user.fetchGames();
 
 	} catch (error) {
 
@@ -242,8 +244,6 @@ router.post('/rest/game/join', async function newGame( req, res, next ) {
 		});
 
 	}
-
-	await user.fetchGames();
 
 	return res.status(200).send({
 		code: 'success',

@@ -26,6 +26,10 @@ new Vue({
 
 		loggedIn() {
 			return ( this.user !== null );
+		},
+
+		gameID() {
+			return ( this.game ? this.game.code : null );
 		}
 
 	},
@@ -61,16 +65,18 @@ new Vue({
 
 				<ul v-if="loggedIn">
 
-					<li :class="getMenuItemClass('settings')" :title="user.name">
-						<a href @click.prevent="setView('settings')">
+					<li :class="getMenuItemClass('home')" :title="user.name">
+						<a href @click.prevent="setView('home')">
 							<span class="nav-icon"><i class="fas fa-user"></i></span>
 							<span class="nav-text">{{ user.display }}</span>
 						</a>
 					</li>
 
-					<li :class="getMenuItemClass('home')">
-						<a href @click.prevent="setView('home')">
-							<span class="nav-text">Games</span>
+					<li
+						:class="getMenuItemClass('play')"
+						v-if="game">
+						<a href @click.prevent="setView('play')">
+							<span class="nav-text">{{ game.code }}</span>
 						</a>
 					</li>
 
@@ -91,8 +97,15 @@ new Vue({
 			<sh-home
 				v-show="isView('home')"
 				:user="user"
-				@setView="setView"
-			></sh-home>
+				@setGame="setGame"
+				@setView="setView">
+			</sh-home>
+
+			<sh-play
+				v-show="isView('play')"
+				:user="user"
+				:game="game">
+			</sh-play>
 
 			<sh-create
 				v-show="isView('create')"
@@ -100,24 +113,24 @@ new Vue({
 				@setUser="setUser"
 				@setGame="setGame"
 				@showLoading="showLoading"
-				@hideLoading="hideLoading"
-			></sh-create>
+				@hideLoading="hideLoading">
+			</sh-create>
 
 			<sh-register
 				v-show="isView('register')"
 				@setView="setView"
 				@setUser="setUser"
 				@showLoading="showLoading"
-				@hideLoading="hideLoading"
-			></sh-register>
+				@hideLoading="hideLoading">
+			</sh-register>
 
 			<sh-login
 				v-show="isView('login')"
 				@setView="setView"
 				@setUser="setUser"
 				@showLoading="showLoading"
-				@hideLoading="hideLoading"
-			></sh-login>
+				@hideLoading="hideLoading">
+			</sh-login>
 
 		</main>
 
@@ -157,6 +170,17 @@ new Vue({
 	mounted() {
 
 		this.getData();
+
+	},
+
+	watch: {
+
+		gameID( newGameID, oldGameID ) {
+
+			if ( oldGameID ) this.socket.emit( 'leaveGame', oldGameID );
+			if ( newGameID ) this.socket.emit( 'joinGame',  newGameID );
+
+		}
 
 	},
 

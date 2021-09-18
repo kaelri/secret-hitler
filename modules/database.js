@@ -2,8 +2,6 @@ const mysql = require('mysql');
 
 module.exports = class Database {
 
-	// CONNECTION
-
 	// static connection;
 
 	static getConnection( options = {} ) {

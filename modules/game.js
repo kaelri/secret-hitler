@@ -1,4 +1,5 @@
 const Database = require('./database');
+const User     = require('./user');
 
 module.exports = class Game {
 
@@ -22,19 +23,24 @@ module.exports = class Game {
 
 	}
 
-	async addPlayer( userID, tags = [] ) {
+	async addPlayer( user, roles = [] ) {
 
-		this.content.players[ userID ] = tags;
+		this.content.players.push = ({
+			name:    user.name,
+			display: user.display,
+			roles:   roles,
+		});
 
 		await Database.createPlayer({
 			gameID: this.id,
-			userID: userID,
+			userID: user.id,
 		});
 
 	}
 
-	export( userID = null ) {
-		return {
+	export() {
+
+		const data = {
 			code:     this.code,
 			name:     this.name,
 			status:   this.status,
@@ -42,18 +48,20 @@ module.exports = class Game {
 			created:  this.created,
 			modified: this.modified,
 		}
+
+		return data;
+
 	}
 
 	static async create( input ) {
 
 		const name   = input.name,
-		      userID = input.userID,
+		      user   = input.user,
 		      code   = await this.generateCode(),
 		      status = 'new';
 
 		const content = {
-			creator: userID,
-			players: {},
+			players: [],
 		}
 
 		// Create game.
@@ -68,7 +76,7 @@ module.exports = class Game {
 			  game = new this(data);
 		
 		// Add the current user as the first player and host.
-		await game.addPlayer( userID, [ 'host' ] );
+		await game.addPlayer( user, [ 'host' ] );
 		await game.save();
 	
 		// Finish.

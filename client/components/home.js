@@ -44,7 +44,7 @@ Vue.component('shHome', {
 			<li
 				v-for="game in gamesList"
 				:key="game.code"
-				@click="setGame( game.id )">
+				@click="setGame( game )">
 
 				<div class="card-code">{{ game.code }}</div>
 
@@ -69,9 +69,9 @@ Vue.component('shHome', {
 			this.$emit( 'setView', viewID );
 		},
 
-		setGame( gameID ) {
-			this.$emit( 'setGame', gameID );
-			this.setView('game');
+		setGame( game ) {
+			this.$emit( 'setGame', game   );
+			this.$emit( 'setView', 'play' );
 		},
 
 		getGameDisplayName( game ) {
