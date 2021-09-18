@@ -10,10 +10,7 @@ mix
   }
 })
 .combine([
-	'client/home.js',
-	'client/register.js',
-	'client/login.js',
-	'client/create.js',
+	'client/components/*.js',
 	'client/client.js',
 ], 'public/js/scripts.js' )
 .disableNotifications();
