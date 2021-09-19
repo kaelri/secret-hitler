@@ -256,6 +256,14 @@ new Vue({
 
 			this.socket.on('dev-message', (message) => console.log( `[Dev Message] ${message}` ) );
 
+			this.socket.on( 'gameUpdated', (game) => {
+
+				if (this.game && this.game.id == game.id ) {
+					this.setGame( game );
+				}
+
+			});
+
 		},
 
 		closeSocket() {

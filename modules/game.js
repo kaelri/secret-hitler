@@ -1,4 +1,5 @@
 const Database = require('./database');
+const Socket   = require('./socket');
 const User     = require('./user');
 
 module.exports = class Game {
@@ -20,6 +21,8 @@ module.exports = class Game {
 			status:  this.status,
 			content: this.content,
 		});
+
+		Socket.io.to(`game-${this.id}`).emit( 'gameUpdated', this.export() );
 
 	}
 
