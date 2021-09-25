@@ -40,7 +40,12 @@ module.exports = class User {
 
 			const game = new Game(data);
 
-			games[ game.code ] = game;
+			games[ game.code ] = {
+				code:     game.code,
+				name:     game.name,
+				status:   game.status,
+				modified: game.modified,
+			};
 			
 		}
 
@@ -57,16 +62,8 @@ module.exports = class User {
 			name:    this.name,
 			email:   this.email,
 			display: this.display,
-			created: this.created,
-			games:   {},
-		}
-
-		for (let i = 0; i < Object.keys(this.games).length; i++) {
-			const gameCode = Object.keys(this.games)[i];
-			const game     = this.games[ gameCode ];
-
-			data.games[ gameCode ] = game.export();
-
+			created: this.created.format(),
+			games:   this.games,
 		}
 
 		return data;
@@ -120,11 +117,11 @@ module.exports = class User {
 
 	static async getCurrent( req ) {
 
-		const id = req.session.userID || null;
+		const name = req.session.userName || null;
 
-		if ( !id ) return null;
+		if ( !name ) return null;
 
-		let user = await this.get( 'id', id );
+		let user = await this.get( 'name', name );
 		
 		return user;
 

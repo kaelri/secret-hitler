@@ -6,19 +6,19 @@ new Vue({
 
 	data: {
 
-		appURL:    '',
-		socket:    null,
-		socketURL: '',
-		user:      null,
-		game:      null,
+		appURL:        '',
+		socket:        null,
+		socketURL:     '',
+		user:          null,
+		game:          null,
 
 		// LOGIN
 		loginName:     '',
 		loginPassword: '',
 
 		// VIEW
-		view:      '',
-		isLoading: false,
+		view:          '',
+		isLoading:     false,
 
 	},
 
@@ -27,10 +27,6 @@ new Vue({
 		loggedIn() {
 			return ( this.user !== null );
 		},
-
-		gameID() {
-			return ( this.game ? this.game.code : null );
-		}
 
 	},
 
@@ -97,24 +93,9 @@ new Vue({
 			<sh-home
 				v-show="isView('home')"
 				:user="user"
-				@setGame="setGame"
+				@joinGame="joinGame"
 				@setView="setView">
 			</sh-home>
-
-			<sh-play
-				v-show="isView('play')"
-				:user="user"
-				:game="game">
-			</sh-play>
-
-			<sh-create
-				v-show="isView('create')"
-				@setView="setView"
-				@setUser="setUser"
-				@setGame="setGame"
-				@showLoading="showLoading"
-				@hideLoading="hideLoading">
-			</sh-create>
 
 			<sh-register
 				v-show="isView('register')"
@@ -131,6 +112,23 @@ new Vue({
 				@showLoading="showLoading"
 				@hideLoading="hideLoading">
 			</sh-login>
+
+			<sh-create
+				v-show="isView('create')"
+				@setView="setView"
+				@setUser="setUser"
+				@joinGame="joinGame"
+				@showLoading="showLoading"
+				@hideLoading="hideLoading">
+			</sh-create>
+
+			<sh-play
+				v-show="isView('play')"
+				:user="user"
+				:game="game"
+				@showLoading="showLoading"
+				@hideLoading="hideLoading">
+			</sh-play>
 
 		</main>
 
@@ -175,13 +173,6 @@ new Vue({
 
 	watch: {
 
-		gameID( newGameID, oldGameID ) {
-
-			if ( oldGameID ) this.socket.emit( 'leaveGame', oldGameID );
-			if ( newGameID ) this.socket.emit( 'joinGame',  newGameID );
-
-		}
-
 	},
 
 	methods: {
@@ -212,10 +203,6 @@ new Vue({
 
 			if ( user ) this.openSocket();
 
-		},
-
-		setGame( game ) {
-			this.game = game;
 		},
 
 		getData() {
@@ -256,11 +243,11 @@ new Vue({
 
 			this.socket.on('dev-message', (message) => console.log( `[Dev Message] ${message}` ) );
 
-			this.socket.on( 'gameUpdated', (game) => {
+			this.socket.on( 'game-state', (data) => {
 
-				if (this.game && this.game.id == game.id ) {
-					this.setGame( game );
-				}
+				if ( !this.game || this.game.code !== data.code ) return;
+
+				this.getGame( data.code, data.time );
 
 			});
 
@@ -294,6 +281,39 @@ new Vue({
 			})
 			.catch((error) => { console.error( 'Something went wrong.', error ) })
 			.then(() => { this.hideLoading() });
+
+		},
+
+		joinGame( gameCode ) {
+
+			if ( this.game && this.game.code !== gameCode ) {
+				this.socket.emit( 'leaveGame', this.game.code );
+			}
+
+			this.socket.emit( 'enterGame',  gameCode );
+
+			this.getGame( gameCode );
+
+		},
+
+		getGame( code, timestamp ) {
+
+			if ( timestamp && this.game && this.game.modified >= timestamp ) return;
+
+			axios.post('/rest/game/get', {
+				code: code
+			})
+			.then((response) => {
+				switch ( response.data.code ) {
+					case 'success':
+						this.game = response.data.game;
+						break;
+					default:
+						throw new Error( `Unexpected response code: ${response.data.code}` );
+						break;
+				}
+			})
+			.catch((error) => { console.error( 'Something went wrong.', error ) });
 
 		},
 

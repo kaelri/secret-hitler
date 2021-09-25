@@ -1,3 +1,4 @@
+const dayjs    = require('dayjs');
 const Database = require('./database');
 const Socket   = require('./socket');
 const User     = require('./user');
@@ -16,19 +17,25 @@ module.exports = class Game {
 
 	async save() {
 
+		this.modified = dayjs();
+
 		await Database.saveGame( this.id, {
-			name:    this.name,
-			status:  this.status,
-			content: this.content,
+			name:     this.name,
+			status:   this.status,
+			content:  this.content,
+			modified: this.modified,
 		});
 
-		Socket.io.to(`game-${this.id}`).emit( 'gameUpdated', this.export() );
+		Socket.io.to(`game-${this.id}`).emit( 'game-state', {
+			code: this.code,
+			time: this.modified,
+		});
 
 	}
 
 	async addPlayer( user, roles = [] ) {
 
-		this.content.players.push = ({
+		this.content.players.push({
 			name:    user.name,
 			display: user.display,
 			roles:   roles,
@@ -48,8 +55,8 @@ module.exports = class Game {
 			name:     this.name,
 			status:   this.status,
 			content:  this.content,
-			created:  this.created,
-			modified: this.modified,
+			created:  this.created.format(),
+			modified: this.modified.format(),
 		}
 
 		return data;
@@ -58,10 +65,11 @@ module.exports = class Game {
 
 	static async create( input ) {
 
-		const name   = input.name,
-		      user   = input.user,
-		      code   = await this.generateCode(),
-		      status = 'new';
+		const name     = input.name,
+		      user     = input.user,
+		      code     = await this.generateCode(),
+		      status   = 'new',
+			  modified = dayjs();
 
 		const content = {
 			players: [],
@@ -69,19 +77,16 @@ module.exports = class Game {
 
 		// Create game.
 		const id = await Database.createGame({
-			name:    name,
-			code:    code,
-			status:  status,
-			content: content,
+			name:     name,
+			code:     code,
+			status:   status,
+			content:  content,
+			modified: modified,
 		});
 	
 		const data = await Database.getGameBy( 'id', id ),
 			  game = new this(data);
 		
-		// Add the current user as the first player and host.
-		await game.addPlayer( user, [ 'host' ] );
-		await game.save();
-	
 		// Finish.
 		return game;
 	

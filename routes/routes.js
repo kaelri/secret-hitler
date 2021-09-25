@@ -14,9 +14,10 @@ router.get('/', async function(req, res, next) {
 		title:          'Secret Hitler',
 		vueURL:         useLocalScripts ? ( useDevScripts ? '/lib/vue/vue.js' : '/lib/vue/vue.min.js' ) : ( useDevScripts ? 'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js' : 'https://cdn.jsdelivr.net/npm/vue@2.6.14' ),
 		googleFontsURL: useLocalScripts ? '/lib/google-fonts/google-fonts.css' : 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Germania+One&display=swap',
-		axiosURL:       useLocalScripts ? '/lib/axios/axios.min.js' : 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js',
-		socketURL:      useLocalScripts ? '/lib/socket-io/socket.io.min.js' : 'https://cdn.socket.io/4.1.2/socket.io.min.js',
-		fontAwesomeURL: useLocalScripts ? '/lib/font-awesome/all.min.js' : 'https://use.fontawesome.com/releases/v5.15.2/js/all.js',
+		axiosURL:       useLocalScripts ? '/lib/axios/axios.min.js'            : 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js',
+		socketURL:      useLocalScripts ? '/lib/socket-io/socket.io.min.js'    : 'https://cdn.socket.io/4.1.2/socket.io.min.js',
+		fontAwesomeURL: useLocalScripts ? '/lib/font-awesome/all.min.js'       : 'https://use.fontawesome.com/releases/v5.15.2/js/all.js',
+		dayjsURL:       useLocalScripts ? '/lib/dayjs/dayjs.min.js'            : 'https://unpkg.com/dayjs@1.8.21/dayjs.min.js',
 	});
 
 });
@@ -86,7 +87,7 @@ router.post('/rest/user/new', async function register(req, res, next) {
 	}
 
 	// Finish.
-	req.session.userID = user.id;
+	req.session.userName = user.name;
 
 	return res.status(200).send({
 		code: 'success',
@@ -140,7 +141,7 @@ router.post('/rest/user/login', async function login(req, res, next) {
 	await user.fetchGames();
 
 	// Finish.
-	req.session.userID = user.id;
+	req.session.userName = user.name;
 
 	return res.status(200).send({
 		code: 'success',
@@ -183,6 +184,10 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 			user: user,
 		});
 
+		// Add this user as the first player and host.
+		await game.addPlayer( user, [ 'host' ] );
+		await game.save();
+
 		// Fetch user’s active games.
 		await user.fetchGames();
 
@@ -197,9 +202,9 @@ router.post('/rest/game/new', async function newGame( req, res, next ) {
 	}
 
 	return res.status(200).send({
-		code: 'success',
-		user: user.export(),
-		game: game.export()
+		code:     'success',
+		gameCode: game.code,
+		user:     user.export(),
 	});
 
 });
@@ -232,6 +237,7 @@ router.post('/rest/game/join', async function newGame( req, res, next ) {
 		}
 
 		await game.addPlayer( user.id );
+		await game.save();
 
 		await user.fetchGames();
 
@@ -246,8 +252,52 @@ router.post('/rest/game/join', async function newGame( req, res, next ) {
 	}
 
 	return res.status(200).send({
+		code:     'success',
+		gameCode: game.code,
+		user:     user.export(),
+	});
+
+});
+
+router.post('/rest/game/get', async function newGame( req, res, next ) {
+
+	const code = String( req.body.code || '' ).trim(),
+		  user = await User.getCurrent( req );
+
+	if ( !user ) {
+
+		return res.status(400).send({
+			code: 'not-logged-in'
+		});
+
+	}
+
+	let game;
+
+	try {
+
+		game = await Game.get( 'code', code );
+		
+		if ( !game ) {
+
+			return res.status(200).send({
+				code: 'game-not-found'
+			});
+
+		}
+
+	} catch (error) {
+
+		return res.status(500).send({
+			code:    'database-error',
+			message: error.message,
+			stack:   error.stack
+		});
+
+	}
+
+	return res.status(200).send({
 		code: 'success',
-		user: user.export(),
 		game: game.export()
 	});
 

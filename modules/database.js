@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const dayjs = require('dayjs');
 
 module.exports = class Database {
 
@@ -50,7 +51,7 @@ module.exports = class Database {
 				\`status\` varchar(60) NOT NULL DEFAULT '',
 				\`content\` longtext NOT NULL DEFAULT '',
 				\`created\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				\`modified\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+				\`modified\` datetime NOT NULL,
 				PRIMARY KEY (id)
 			);
 			
@@ -58,8 +59,6 @@ module.exports = class Database {
 				\`id\` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				\`game_id\` bigint(20) UNSIGNED NOT NULL,
 				\`user_id\` bigint(20) UNSIGNED NOT NULL,
-				\`created\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				\`modified\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 				PRIMARY KEY (id)
 			);`;
 
@@ -170,7 +169,7 @@ module.exports = class Database {
 					roles:   row.roles.split(','),
 					salt:    row.salt,
 					hash:    row.hash,
-					created: row.created,
+					created: dayjs(row.created),
 				}
 
 				return resolve( data );
@@ -214,6 +213,7 @@ module.exports = class Database {
 				code:    String( data.code ),
 				status:  String( data.status ),
 				content: JSON.stringify( data.content ),
+				modified: data.modified.toDate(),
 			}
 
 			connection.query(`INSERT INTO games SET ?`, values, function (error, results, fields) {
@@ -237,9 +237,10 @@ module.exports = class Database {
 			const connection = this.getConnection();
 
 			const values = {
-				name:    String( data.name ),
-				status:  String( data.status ),
-				content: JSON.stringify( data.content ),
+				name:     String( data.name ),
+				status:   String( data.status ),
+				content:  JSON.stringify( data.content ),
+				modified: data.modified.toDate(),
 			}
 
 			connection.query(`UPDATE games SET ? WHERE id = ?`, [ values, id ], function (error, results, fields) {
@@ -313,8 +314,8 @@ module.exports = class Database {
 					name:     row.name,
 					status:   row.status,
 					content:  JSON.parse( row.content ),
-					created:  row.created,
-					modified: row.modified,
+					created:  dayjs(row.created),
+					modified: dayjs(row.modified),
 				}
 
 				return resolve( data );

@@ -42,9 +42,9 @@ Vue.component('shCreate', {
 				switch ( response.data.code ) {
 					case 'success':
 
-						this.$emit( 'setUser', response.data.user );
-						this.$emit( 'setGame', response.data.game );
-						this.$emit( 'setView', 'play' );
+						this.$emit( 'setUser',  response.data.user     );
+						this.$emit( 'joinGame', response.data.gameCode );
+						this.$emit( 'setView',  'play' );
 						this.name = '';
 
 						break;

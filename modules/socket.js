@@ -21,27 +21,27 @@ module.exports = class Socket {
 
 			const session = socket.request.session;
 
-			if ( !session.userID ) return;
+			if ( !session.userName ) return;
 
-			const userID = session.userID;
+			const userName = session.userName;
 
-			console.info( `User ${userID} has logged in.` );
+			console.info( `User ${userName} has logged in.` );
 
 			// Join a "room" with the user’s ID to make it easier to target this socket.
-			socket.join(`user-${userID}`);
+			socket.join(`user-${userName}`);
 
-			socket.on('joinGame', ( gameID ) => {
-				console.info( `User ${userID} has joined game-${gameID}.` );
-				socket.join(`game-${gameID}`);
+			socket.on('enterGame', ( gameCode ) => {
+				console.info( `User ${userName} has joined game ${gameCode}.` );
+				socket.join(`game-${gameCode}`);
 			});
 			
-			socket.on('leaveGame', ( gameID ) => {
-				console.info( `User ${userID} has left game-${gameID}.` );
-				socket.leave(`game-${gameID}`);
+			socket.on('leaveGame', ( gameCode ) => {
+				console.info( `User ${userName} has left game ${gameCode}.` );
+				socket.leave(`game-${gameCode}`);
 			});
 			
 			socket.on('disconnect', () => {
-				console.info( `User ${userID} has logged out.` );
+				console.info( `User ${userName} has logged out.` );
 			});
 
 		});
