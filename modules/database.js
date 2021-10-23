@@ -257,6 +257,8 @@ module.exports = class Database {
 
 	static createPlayer( data ) {
 
+		console.log(data);
+
 		return new Promise((resolve, reject) => {
 
 			const connection = this.getConnection();

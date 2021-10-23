@@ -122,6 +122,15 @@ new Vue({
 				@hideLoading="hideLoading">
 			</sh-create>
 
+			<sh-join
+				v-show="isView('join')"
+				@setView="setView"
+				@setUser="setUser"
+				@joinGame="joinGame"
+				@showLoading="showLoading"
+				@hideLoading="hideLoading">
+			</sh-join>
+
 			<sh-play
 				v-show="isView('play')"
 				:user="user"

@@ -236,7 +236,7 @@ router.post('/rest/game/join', async function newGame( req, res, next ) {
 
 		}
 
-		await game.addPlayer( user.id );
+		await game.addPlayer( user );
 		await game.save();
 
 		await user.fetchGames();
